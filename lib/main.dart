@@ -10,9 +10,12 @@ import 'controllers/profile_controller.dart';
 import 'controllers/streamer_controller.dart';
 import 'controllers/donation_controller.dart';
 import 'controllers/wallet_controller.dart';
+import 'controllers/main_controller.dart';
 
 void main() {
   Get.put(AuthController());
+
+  Get.put(MainController());
 
   Get.put(ProfileController());
 
