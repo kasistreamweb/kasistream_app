@@ -9,17 +9,16 @@ class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() =>
-      _MainScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
   int currentIndex = 0;
 
-  final pages = const [
-    HomeScreen(),
-    StreamerScreen(),
-    WalletScreen(),
+  final pages = [
+    const HomeScreen(),
+    const StreamerScreen(),
+    const WalletScreen(),
     ProfileScreen(),
   ];
 
@@ -43,20 +42,16 @@ class _MainScreenState extends State<MainScreen> {
             selectedIcon: Icon(Icons.home),
             label: "Home",
           ),
-
           NavigationDestination(
             icon: Icon(Icons.live_tv_outlined),
             selectedIcon: Icon(Icons.live_tv),
             label: "Streamer",
           ),
-
           NavigationDestination(
             icon: Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon:
-                Icon(Icons.account_balance_wallet),
+            selectedIcon: Icon(Icons.account_balance_wallet),
             label: "Wallet",
           ),
-
           NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),

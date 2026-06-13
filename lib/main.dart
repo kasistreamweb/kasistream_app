@@ -5,7 +5,23 @@ import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'app/theme/app_theme.dart';
 
+import 'controllers/auth_controller.dart';
+import 'controllers/profile_controller.dart';
+import 'controllers/streamer_controller.dart';
+import 'controllers/donation_controller.dart';
+import 'controllers/wallet_controller.dart';
+
 void main() {
+  Get.put(AuthController());
+
+  Get.put(ProfileController());
+
+  Get.put(StreamerController());
+
+  Get.put(DonationController());
+
+  Get.put(WalletController());
+
   runApp(const KAistreamApp());
 }
 
@@ -16,9 +32,13 @@ class KAistreamApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: 'KAistream',
+
       theme: AppTheme.darkTheme,
+
       initialRoute: Routes.splash,
+
       getPages: AppPages.routes,
     );
   }
