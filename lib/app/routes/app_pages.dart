@@ -4,6 +4,8 @@ import '../../modules/auth/login_screen.dart';
 import '../../modules/auth/register_screen.dart';
 import '../../modules/home/home_screen.dart';
 import '../../modules/profile/profile_screen.dart';
+import '../../modules/profile/edit_profile_screen.dart';
+import '../../modules/settings/settings_screen.dart';
 import '../../modules/splash/splash_screen.dart';
 import '../../modules/streamer/streamer_screen.dart';
 import '../../modules/wallet/wallet_screen.dart';
@@ -18,7 +20,10 @@ import 'app_routes.dart';
 
 class AppPages {
   static final routes = [
-    GetPage(name: Routes.splash, page: () => const SplashScreen()),
+    GetPage(
+      name: Routes.splash,
+      page: () => const SplashScreen(),
+    ),
 
     GetPage(
       name: Routes.login,
@@ -71,6 +76,18 @@ class AppPages {
     GetPage(
       name: Routes.donate,
       page: () => const DonateScreen(),
+      middlewares: [AuthMiddleware()],
+    ),
+
+    GetPage(
+      name: Routes.editProfile,
+      page: () => const EditProfileScreen(),
+      middlewares: [AuthMiddleware()],
+    ),
+
+    GetPage(
+      name: Routes.settings,
+      page: () => const SettingsScreen(),
       middlewares: [AuthMiddleware()],
     ),
   ];

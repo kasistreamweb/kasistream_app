@@ -25,14 +25,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> checkLogin() async {
-    await Future.delayed(const Duration(seconds: 3));
+  await Future.delayed(const Duration(seconds: 3));
 
-    if (auth.isLoggedIn.value) {
-      Get.offAllNamed(Routes.main);
-    } else {
-      Get.offAllNamed(Routes.login);
-    }
-  }
+  Get.offAllNamed(Routes.login);
+}
 
   @override
   Widget build(BuildContext context) {
