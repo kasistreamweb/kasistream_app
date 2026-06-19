@@ -8,12 +8,15 @@ class StreamerController extends GetxController {
 
   RxList<StreamerModel> streamers = <StreamerModel>[].obs;
 
+  RxList<StreamerModel> filteredStreamers = <StreamerModel>[].obs;
+
   RxBool isLoading = false.obs;
+
+  RxString searchQuery = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-
     loadStreamers();
   }
 
@@ -21,10 +24,33 @@ class StreamerController extends GetxController {
     try {
       isLoading.value = true;
 
-      streamers.value = await _service.getStreamers();
+      final result = await _service.getStreamers();
+
+      streamers.value = result;
+
+      filteredStreamers.value = result;
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void search(String keyword) {
+    searchQuery.value = keyword;
+
+    if (keyword.trim().isEmpty) {
+      filteredStreamers.value = List.from(streamers);
+      return;
+    }
+
+    filteredStreamers.value = streamers
+        .where(
+          (streamer) =>
+              streamer.name.toLowerCase().contains(keyword.toLowerCase()) ||
+              (streamer.game ?? '').toLowerCase().contains(
+                keyword.toLowerCase(),
+              ),
+        )
+        .toList();
   }
 
   Future<void> follow(int streamerId) async {
@@ -37,5 +63,13 @@ class StreamerController extends GetxController {
     await _service.unfollow(streamerId);
 
     await loadStreamers();
+  }
+
+  List<StreamerModel> get topStreamers {
+    final list = [...streamers];
+
+    list.sort((a, b) => b.followers.compareTo(a.followers));
+
+    return list.take(3).toList();
   }
 }

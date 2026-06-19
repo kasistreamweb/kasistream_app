@@ -27,4 +27,28 @@ class WalletService {
 
     return jsonDecode(response.body);
   }
+
+  Future<Map<String, dynamic>> getSummary() async {
+    final token = await StorageService.getToken();
+
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/wallet-summary'),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+
+    return jsonDecode(response.body);
+  }
+
+  Future<List<dynamic>> getHistory() async {
+    final token = await StorageService.getToken();
+
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/withdraw-history'),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+
+    final data = jsonDecode(response.body);
+
+    return data['data'] ?? [];
+  }
 }

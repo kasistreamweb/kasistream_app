@@ -7,6 +7,13 @@ class WalletController extends GetxController {
 
   RxBool isLoading = false.obs;
 
+  // Properties
+  RxInt balance = 0.obs;
+  RxInt totalDonasi = 0.obs;
+  RxInt totalWithdraw = 0.obs;
+  RxInt pendingWithdraw = 0.obs;
+  RxList history = [].obs;
+
   Future<bool> withdraw({
     required int nominal,
     required String bank,
@@ -27,5 +34,33 @@ class WalletController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> loadWallet() async {
+    try {
+      isLoading.value = true;
+
+      final summary = await _service.getSummary();
+
+      balance.value = int.tryParse(summary['balance'].toString()) ?? 0;
+
+      totalDonasi.value = int.tryParse(summary['total_donasi'].toString()) ?? 0;
+
+      totalWithdraw.value =
+          int.tryParse(summary['total_withdraw'].toString()) ?? 0;
+
+      pendingWithdraw.value =
+          int.tryParse(summary['pending_withdraw'].toString()) ?? 0;
+
+      history.value = await _service.getHistory();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadWallet();
   }
 }

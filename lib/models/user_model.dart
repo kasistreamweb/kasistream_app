@@ -51,7 +51,7 @@ class UserModel {
           json['is_streamer'] == 1 ||
           json['is_streamer'] == '1',
 
-      foto: json['foto']?.toString(),
+      foto: json['foto_url']?.toString(),
       bio: json['bio']?.toString(),
       game: json['game']?.toString(),
 

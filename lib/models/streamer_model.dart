@@ -21,6 +21,8 @@ class StreamerModel {
 
   final int totalDonasi;
 
+  final String? jadwalLive;
+
   StreamerModel({
     required this.id,
     required this.name,
@@ -33,6 +35,7 @@ class StreamerModel {
     this.discord,
     required this.followers,
     required this.totalDonasi,
+    this.jadwalLive,
   });
 
   factory StreamerModel.fromJson(Map<String, dynamic> json) {
@@ -41,7 +44,7 @@ class StreamerModel {
 
       name: json['name']?.toString() ?? '',
 
-      foto: json['foto']?.toString(),
+      foto: json['foto_url']?.toString() ?? json['foto']?.toString(),
 
       bio: json['bio']?.toString(),
 
@@ -58,6 +61,8 @@ class StreamerModel {
       followers: int.tryParse(json['followers'].toString()) ?? 0,
 
       totalDonasi: int.tryParse(json['total_donasi'].toString()) ?? 0,
+
+      jadwalLive: json['jadwal_live']?.toString(),
     );
   }
 
@@ -74,6 +79,7 @@ class StreamerModel {
       'discord': discord,
       'followers': followers,
       'total_donasi': totalDonasi,
+      'jadwal_live': jadwalLive,
     };
   }
 }

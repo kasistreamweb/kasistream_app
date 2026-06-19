@@ -12,7 +12,8 @@ import '../../modules/wallet/wallet_screen.dart';
 import '../../modules/main/main_screen.dart';
 import '../../modules/donation/donate_screen.dart';
 import '../../modules/streamer/streamer_detail_screen.dart';
-
+import '../../modules/search/search_screen.dart';
+import '../../modules/donation/donation_history_screen.dart';
 import '../middlewares/auth_middleware.dart';
 import '../middlewares/guest_middleware.dart';
 
@@ -20,10 +21,7 @@ import 'app_routes.dart';
 
 class AppPages {
   static final routes = [
-    GetPage(
-      name: Routes.splash,
-      page: () => const SplashScreen(),
-    ),
+    GetPage(name: Routes.splash, page: () => const SplashScreen()),
 
     GetPage(
       name: Routes.login,
@@ -90,5 +88,11 @@ class AppPages {
       page: () => const SettingsScreen(),
       middlewares: [AuthMiddleware()],
     ),
+
+    GetPage(name: Routes.search, page: () => const SearchScreen()),
+
+    GetPage(name: Routes.streamers, page: () => const StreamerScreen()),
+
+    GetPage(name: Routes.history, page: () => const DonationHistoryScreen()),
   ];
 }
