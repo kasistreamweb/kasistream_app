@@ -51,6 +51,7 @@ class AuthController extends GetxController {
 
       return false;
     } catch (e) {
+      print('LOGIN ERROR: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -60,7 +61,9 @@ class AuthController extends GetxController {
   Future<bool> register({
     required String name,
     required String email,
+    required String onopayPhone,
     required String password,
+    String? imagePath,
   }) async {
     try {
       isLoading.value = true;
@@ -68,7 +71,9 @@ class AuthController extends GetxController {
       final result = await _authService.register(
         name: name,
         email: email,
+        onopayPhone: onopayPhone,
         password: password,
+        imagePath: imagePath,
       );
 
       if (result['success']) {
@@ -85,6 +90,7 @@ class AuthController extends GetxController {
 
       return false;
     } catch (e) {
+      print('REGISTER ERROR: $e');
       return false;
     } finally {
       isLoading.value = false;

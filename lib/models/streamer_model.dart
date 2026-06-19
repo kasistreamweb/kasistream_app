@@ -37,17 +37,27 @@ class StreamerModel {
 
   factory StreamerModel.fromJson(Map<String, dynamic> json) {
     return StreamerModel(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      foto: json['foto'],
-      bio: json['bio'],
-      game: json['game'],
-      instagram: json['instagram'],
-      youtube: json['youtube'],
-      tiktok: json['tiktok'],
-      discord: json['discord'],
-      followers: json['followers'] ?? 0,
-      totalDonasi: json['total_donasi'] ?? 0,
+      id: int.tryParse(json['id'].toString()) ?? 0,
+
+      name: json['name']?.toString() ?? '',
+
+      foto: json['foto']?.toString(),
+
+      bio: json['bio']?.toString(),
+
+      game: json['game']?.toString(),
+
+      instagram: json['instagram']?.toString(),
+
+      youtube: json['youtube']?.toString(),
+
+      tiktok: json['tiktok']?.toString(),
+
+      discord: json['discord']?.toString(),
+
+      followers: int.tryParse(json['followers'].toString()) ?? 0,
+
+      totalDonasi: int.tryParse(json['total_donasi'].toString()) ?? 0,
     );
   }
 

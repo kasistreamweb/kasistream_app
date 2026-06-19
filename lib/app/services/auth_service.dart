@@ -44,14 +44,30 @@ class AuthService {
   Future<Map<String, dynamic>> register({
     required String name,
     required String email,
+    required String onopayPhone,
     required String password,
+    String? imagePath,
   }) async {
     try {
-      final response = await http.post(
+      final request = http.MultipartRequest(
+        'POST',
         Uri.parse('${ApiService.baseUrl}/register'),
-        headers: {'Accept': 'application/json'},
-        body: {'name': name, 'email': email, 'password': password},
       );
+
+      request.headers['Accept'] = 'application/json';
+
+      request.fields['name'] = name;
+      request.fields['email'] = email;
+      request.fields['onopay_phone'] = onopayPhone;
+      request.fields['password'] = password;
+
+      if (imagePath != null && imagePath.isNotEmpty) {
+        request.files.add(await http.MultipartFile.fromPath('foto', imagePath));
+      }
+
+      final streamedResponse = await request.send();
+
+      final response = await http.Response.fromStream(streamedResponse);
 
       print('====================');
       print('REGISTER STATUS: ${response.statusCode}');
