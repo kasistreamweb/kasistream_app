@@ -40,30 +40,22 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: int.tryParse(json['id'].toString()) ?? 0,
-
       name: json['name']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
-
       role: json['role']?.toString() ?? 'user',
-
       isStreamer:
           json['is_streamer'] == true ||
           json['is_streamer'] == 1 ||
           json['is_streamer'] == '1',
-
-      foto: json['foto_url']?.toString(),
+      foto: json['foto_url']?.toString(), // ← Konsisten dengan API
       bio: json['bio']?.toString(),
       game: json['game']?.toString(),
-
       instagram: json['instagram']?.toString(),
       youtube: json['youtube']?.toString(),
       tiktok: json['tiktok']?.toString(),
       discord: json['discord']?.toString(),
-
       followers: int.tryParse(json['followers'].toString()) ?? 0,
-
       totalDonasi: int.tryParse(json['total_donasi'].toString()) ?? 0,
-
       balance: int.tryParse(json['balance'].toString()) ?? 0,
     );
   }

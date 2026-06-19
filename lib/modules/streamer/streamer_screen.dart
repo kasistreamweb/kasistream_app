@@ -20,10 +20,7 @@ class StreamerScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          "Streamer",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        toolbarHeight: 0, // Set ke 0 agar AppBar tidak memakan ruang
         centerTitle: true,
       ),
       body: Container(
@@ -78,7 +75,7 @@ class StreamerScreen extends StatelessWidget {
               ),
             ),
 
-            // Main content
+            // Main content - tanpa SafeArea agar lebih rapat ke atas
             Obx(() {
               if (controller.isLoading.value && controller.streamers.isEmpty) {
                 return const Center(
@@ -96,21 +93,18 @@ class StreamerScreen extends StatelessWidget {
                 onRefresh: controller.loadStreamers,
                 child: CustomScrollView(
                   slivers: [
-                    // Spacer for AppBar
+                    // Hanya spacer kecil untuk status bar
                     SliverToBoxAdapter(
                       child: SizedBox(
-                        height:
-                            MediaQuery.of(context).padding.top +
-                            kToolbarHeight +
-                            8,
+                        height: MediaQuery.of(context).padding.top + 8,
                       ),
                     ),
 
-                    // ── Hero Banner Premium ─────────────────────────────────
+                    // ── Hero Banner ──────────────────────────────────────────
                     SliverToBoxAdapter(
                       child: Container(
-                        margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                        padding: const EdgeInsets.all(24),
+                        margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             begin: Alignment.topLeft,
@@ -128,9 +122,8 @@ class StreamerScreen extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            // Icon dengan background glow
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 shape: BoxShape.circle,
@@ -145,10 +138,10 @@ class StreamerScreen extends StatelessWidget {
                               child: const Icon(
                                 Icons.local_fire_department,
                                 color: Colors.orange,
-                                size: 36,
+                                size: 30,
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: 14),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,26 +149,25 @@ class StreamerScreen extends StatelessWidget {
                                   Text(
                                     "🔥 Top Streamers",
                                     style: TextStyle(
-                                      fontSize: 22,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(height: 4),
+                                  SizedBox(height: 2),
                                   Text(
                                     "Dukung streamer favoritmu dengan donasi",
                                     style: TextStyle(
                                       color: Colors.white70,
-                                      fontSize: 14,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            // Arrow icon
                             Container(
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.15),
                                 shape: BoxShape.circle,
@@ -183,7 +175,7 @@ class StreamerScreen extends StatelessWidget {
                               child: const Icon(
                                 Icons.arrow_forward_rounded,
                                 color: Colors.white,
-                                size: 20,
+                                size: 18,
                               ),
                             ),
                           ],
@@ -220,7 +212,7 @@ class StreamerScreen extends StatelessWidget {
                             fillColor: Colors.white.withOpacity(0.08),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 14,
+                              vertical: 12,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -246,7 +238,7 @@ class StreamerScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
                     // ── Leaderboard Header ───────────────────────────────────
                     SliverToBoxAdapter(
@@ -257,13 +249,13 @@ class StreamerScreen extends StatelessWidget {
                             Icon(
                               Icons.emoji_events,
                               color: Colors.amber,
-                              size: 22,
+                              size: 20,
                             ),
                             SizedBox(width: 8),
                             Text(
                               "Top Streamers",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
@@ -273,12 +265,12 @@ class StreamerScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 10)),
 
                     // ── Leaderboard Horizontal List ──────────────────────────
                     SliverToBoxAdapter(
                       child: SizedBox(
-                        height: 210,
+                        height: 200,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -293,7 +285,7 @@ class StreamerScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
                     // ── All Streamers List ───────────────────────────────────
                     if (streamers.isEmpty)
@@ -304,7 +296,7 @@ class StreamerScreen extends StatelessWidget {
                             children: const [
                               Icon(
                                 Icons.search_off,
-                                size: 70,
+                                size: 60,
                                 color: Colors.white24,
                               ),
                               SizedBox(height: 12),
@@ -330,7 +322,7 @@ class StreamerScreen extends StatelessWidget {
                       ),
 
                     // Bottom padding
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
                   ],
                 ),
               );
@@ -342,7 +334,7 @@ class StreamerScreen extends StatelessWidget {
   }
 }
 
-// ── Streamer Card dengan Kontras Tinggi ─────────────────────────────────────
+// ── Streamer Card ────────────────────────────────────────────────────────────
 
 class _StreamerCard extends StatelessWidget {
   final StreamerModel streamer;
@@ -359,46 +351,45 @@ class _StreamerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        // Warna card lebih terang dan kontras
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Color(0xFF3D2A7A), Color(0xFF2A1A5E)],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: const Color(0xFF8B5CF6).withOpacity(0.35),
-          width: 2,
+          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF8B5CF6).withOpacity(0.25),
-            blurRadius: 25,
-            offset: const Offset(0, 8),
+            color: const Color(0xFF8B5CF6).withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         child: Column(
           children: [
             // Avatar + name row
             Row(
               children: [
                 CircleAvatar(
-                  radius: 30,
+                  radius: 26,
                   backgroundColor: const Color(0xFF8B5CF6),
                   backgroundImage:
                       streamer.foto != null && streamer.foto!.isNotEmpty
                       ? NetworkImage(streamer.foto!)
                       : null,
                   child: streamer.foto == null || streamer.foto!.isEmpty
-                      ? const Icon(Icons.person, color: Colors.white)
+                      ? const Icon(Icons.person, color: Colors.white, size: 26)
                       : null,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,17 +397,16 @@ class _StreamerCard extends StatelessWidget {
                       Text(
                         streamer.name,
                         style: const TextStyle(
-                          fontSize: 17,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 3),
-                      // Game chip dengan warna lebih terang
+                      const SizedBox(height: 2),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
+                          horizontal: 8,
+                          vertical: 2,
                         ),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -428,7 +418,7 @@ class _StreamerCard extends StatelessWidget {
                           streamer.game ?? "Streamer",
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 11,
+                            fontSize: 10,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -436,25 +426,24 @@ class _StreamerCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Followers badge dengan warna lebih terang
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
+                    horizontal: 8,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF8B5CF6).withOpacity(0.25),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: const Color(0xFF8B5CF6).withOpacity(0.5),
-                      width: 1.5,
+                      color: const Color(0xFF8B5CF6).withOpacity(0.4),
+                      width: 1,
                     ),
                   ),
                   child: Text(
                     "${streamer.followers} followers",
                     style: const TextStyle(
                       color: Color(0xFFC8B5FF),
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -462,9 +451,9 @@ class _StreamerCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
 
-            // Stats row dengan background lebih terang
+            // Stats row
             Row(
               children: [
                 Expanded(
@@ -484,7 +473,7 @@ class _StreamerCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
 
             // Buttons row
             Row(
@@ -495,23 +484,23 @@ class _StreamerCard extends StatelessWidget {
                         Get.toNamed(Routes.streamerDetail, arguments: streamer),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white70,
-                      side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                      side: BorderSide(color: Colors.white.withOpacity(0.15)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    child: const Text("Detail"),
+                    child: const Text("Detail", style: TextStyle(fontSize: 12)),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFF8B5CF6), Color(0xFF6D5BFF)],
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: ElevatedButton(
                       onPressed: () =>
@@ -522,11 +511,14 @@ class _StreamerCard extends StatelessWidget {
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
-                      child: const Text("Donate"),
+                      child: const Text(
+                        "Donate",
+                        style: TextStyle(fontSize: 12),
+                      ),
                     ),
                   ),
                 ),
@@ -555,30 +547,30 @@ class _StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         children: [
-          Icon(icon, color: const Color(0xFF8B5CF6), size: 20),
-          const SizedBox(height: 6),
+          Icon(icon, color: const Color(0xFF8B5CF6), size: 18),
+          const SizedBox(height: 4),
           Text(
             value,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
-              fontSize: 13,
+              fontSize: 12,
             ),
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 2),
           Text(
             title,
-            style: const TextStyle(fontSize: 11, color: Colors.white54),
+            style: const TextStyle(fontSize: 10, color: Colors.white54),
           ),
         ],
       ),
@@ -586,7 +578,7 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-// ── Leaderboard Card dengan Kontras Tinggi ──────────────────────────────────
+// ── Leaderboard Card ─────────────────────────────────────────────────────────
 
 class _LeaderboardCard extends StatelessWidget {
   final StreamerModel streamer;
@@ -612,70 +604,65 @@ class _LeaderboardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(18),
       onTap: () => Get.toNamed(Routes.streamerDetail, arguments: streamer),
       child: Container(
-        width: 140,
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.all(16),
+        width: 130,
+        margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          // Warna lebih terang dan kontras
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [Color(0xFF5B2E9E), Color(0xFF7C3AED)],
           ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Colors.white.withOpacity(0.15), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF7C3AED).withOpacity(0.4),
-              blurRadius: 25,
-              offset: const Offset(0, 8),
+              color: const Color(0xFF7C3AED).withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Rank badge dengan warna lebih terang
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: rankColor.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: rankColor.withOpacity(0.8), width: 2),
+                color: rankColor.withOpacity(0.25),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: rankColor.withOpacity(0.6),
+                  width: 1.5,
+                ),
               ),
               child: Text(
                 rankLabel,
                 style: TextStyle(
                   color: rankColor,
                   fontWeight: FontWeight.bold,
-                  fontSize: 13,
+                  fontSize: 11,
                 ),
               ),
             ),
-
-            const SizedBox(height: 12),
-
-            // Avatar centered
+            const SizedBox(height: 10),
             Center(
               child: CircleAvatar(
-                radius: 28,
-                backgroundColor: Colors.white.withOpacity(0.25),
+                radius: 24,
+                backgroundColor: Colors.white.withOpacity(0.2),
                 backgroundImage:
                     streamer.foto != null && streamer.foto!.isNotEmpty
                     ? NetworkImage(streamer.foto!)
                     : null,
                 child: streamer.foto == null || streamer.foto!.isEmpty
-                    ? const Icon(Icons.person, color: Colors.white, size: 28)
+                    ? const Icon(Icons.person, color: Colors.white, size: 24)
                     : null,
               ),
             ),
-
-            const SizedBox(height: 10),
-
-            // Name
+            const SizedBox(height: 8),
             Text(
               streamer.name,
               maxLines: 1,
@@ -684,21 +671,18 @@ class _LeaderboardCard extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontSize: 14,
+                fontSize: 13,
               ),
             ),
-
-            const SizedBox(height: 4),
-
-            // Followers dengan warna lebih terang
+            const SizedBox(height: 2),
             Text(
               "${streamer.followers} Followers",
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 11,
-                color: Colors.white.withOpacity(0.8),
+                fontSize: 10,
+                color: Colors.white.withOpacity(0.7),
               ),
             ),
           ],

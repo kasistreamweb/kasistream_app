@@ -26,4 +26,5 @@ abstract class Routes {
   static const search = "/search";
   static const streamers = "/streamers";
   static const history = "/history";
+  static const dashboard = "/dashboard"; // Tambahkan route dashboard
 }

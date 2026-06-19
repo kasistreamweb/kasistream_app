@@ -6,6 +6,7 @@ import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
 import '../streamer/streamer_screen.dart';
 import '../wallet/wallet_screen.dart';
+import '../streamer/dashboard_streamer_screen.dart';
 
 class MainScreen extends GetView<MainController> {
   const MainScreen({super.key});
@@ -15,13 +16,14 @@ class MainScreen extends GetView<MainController> {
     final pages = [
       const HomeScreen(),
       const StreamerScreen(),
+      const DashboardStreamerScreen(),
       const WalletScreen(),
       ProfileScreen(),
     ];
 
     return Obx(
       () => Scaffold(
-        extendBody: true, // Membuat body extends dibawah navigation bar
+        extendBody: true,
         body: SafeArea(
           child: IndexedStack(
             index: controller.currentIndex.value,
@@ -29,20 +31,20 @@ class MainScreen extends GetView<MainController> {
           ),
         ),
         bottomNavigationBar: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [Color(0xFF1C2147), Color(0xFF0A1030)],
             ),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.06), width: 1),
+            border: Border(
+              top: BorderSide(color: Colors.white.withOpacity(0.06), width: 1),
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.3),
                 blurRadius: 20,
-                offset: const Offset(0, 4),
+                offset: const Offset(0, -4),
               ),
             ],
           ),
@@ -65,6 +67,11 @@ class MainScreen extends GetView<MainController> {
                 icon: Icon(Icons.live_tv_outlined),
                 selectedIcon: Icon(Icons.live_tv),
                 label: "Streamer",
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.dashboard_outlined),
+                selectedIcon: Icon(Icons.dashboard),
+                label: "Dashboard",
               ),
               NavigationDestination(
                 icon: Icon(Icons.account_balance_wallet_outlined),

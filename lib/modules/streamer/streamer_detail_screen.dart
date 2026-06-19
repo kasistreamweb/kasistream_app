@@ -41,8 +41,20 @@ class StreamerDetailScreen extends StatelessWidget {
     final controller = Get.find<StreamerController>();
 
     return Scaffold(
-      backgroundColor: bgDark,
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -52,6 +64,7 @@ class StreamerDetailScreen extends StatelessWidget {
         ),
         child: Stack(
           children: [
+            // Purple glow top-left
             Positioned(
               top: -150,
               left: -120,
@@ -72,6 +85,7 @@ class StreamerDetailScreen extends StatelessWidget {
               ),
             ),
 
+            // Indigo glow bottom-right
             Positioned(
               bottom: -180,
               right: -150,
@@ -92,51 +106,19 @@ class StreamerDetailScreen extends StatelessWidget {
               ),
             ),
 
-            CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  expandedHeight: 180,
-                  pinned: true,
-                  backgroundColor: Colors.transparent,
-                  surfaceTintColor: Colors.transparent,
-                  elevation: 0,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Get.back(),
-                  ),
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        streamer.foto != null && streamer.foto!.isNotEmpty
-                            ? Image.network(
-                                streamer.foto!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) =>
-                                    Container(color: const Color(0xFF0C1738)),
-                              )
-                            : Container(color: const Color(0xFF0C1738)),
-                        Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Color(0xFF050B22)],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+            // Main Content
+            SafeArea(
+              child: CustomScrollView(
+                slivers: [
+                  // Spacer untuk AppBar
+                  SliverToBoxAdapter(child: SizedBox(height: kToolbarHeight)),
 
-                SliverToBoxAdapter(
-                  child: Transform.translate(
-                    offset: const Offset(0, -45),
+                  SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         children: [
+                          // Avatar Profile
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
@@ -176,6 +158,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 16),
 
+                          // Nama Streamer
                           Text(
                             streamer.name,
                             textAlign: TextAlign.center,
@@ -188,6 +171,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 10),
 
+                          // Game Chip
                           if (streamer.game != null &&
                               streamer.game!.isNotEmpty)
                             Container(
@@ -215,6 +199,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 30),
 
+                          // Stats Row
                           Row(
                             children: [
                               Expanded(
@@ -238,6 +223,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 30),
 
+                          // Tentang Streamer
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(20),
@@ -273,6 +259,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 24),
 
+                          // Media Sosial
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(20),
@@ -294,9 +281,7 @@ class StreamerDetailScreen extends StatelessWidget {
                                     color: Colors.white,
                                   ),
                                 ),
-
                                 const SizedBox(height: 16),
-
                                 _SocialItem(
                                   icon: Icons.camera_alt,
                                   title: "Instagram",
@@ -304,7 +289,6 @@ class StreamerDetailScreen extends StatelessWidget {
                                       ? streamer.instagram!
                                       : "-",
                                 ),
-
                                 _SocialItem(
                                   icon: Icons.play_circle_fill,
                                   title: "YouTube",
@@ -312,7 +296,6 @@ class StreamerDetailScreen extends StatelessWidget {
                                       ? streamer.youtube!
                                       : "-",
                                 ),
-
                                 _SocialItem(
                                   icon: Icons.music_note,
                                   title: "TikTok",
@@ -320,7 +303,6 @@ class StreamerDetailScreen extends StatelessWidget {
                                       ? streamer.tiktok!
                                       : "-",
                                 ),
-
                                 _SocialItem(
                                   icon: Icons.discord,
                                   title: "Discord",
@@ -334,6 +316,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 30),
 
+                          // Buttons Row
                           Row(
                             children: [
                               Expanded(
@@ -360,7 +343,6 @@ class StreamerDetailScreen extends StatelessWidget {
                                     child: ElevatedButton.icon(
                                       onPressed: () async {
                                         await controller.follow(streamer.id);
-
                                         Get.snackbar(
                                           "Berhasil",
                                           "Streamer berhasil diikuti",
@@ -384,9 +366,7 @@ class StreamerDetailScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
                               const SizedBox(width: 12),
-
                               Expanded(
                                 child: Container(
                                   height: 58,
@@ -440,8 +420,8 @@ class StreamerDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -517,8 +497,18 @@ class _SocialItem extends StatelessWidget {
       ),
       child: ListTile(
         leading: Icon(icon, color: AppColors.primary),
-        title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: Text(
+          title,
+          style: const TextStyle(color: Colors.white),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          value,
+          style: const TextStyle(color: Colors.white60),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

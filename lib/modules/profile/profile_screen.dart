@@ -12,19 +12,27 @@ class ProfileScreen extends StatelessWidget {
   Future<void> logout() async {
     final result = await Get.dialog<bool>(
       AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Yakin ingin keluar dari akun?'),
+        backgroundColor: const Color(0xFF1C2147),
+        title: const Text('Logout', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Yakin ingin keluar dari akun?',
+          style: TextStyle(color: Colors.white70),
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Get.back(result: false);
             },
-            child: const Text('Batal'),
+            child: const Text('Batal', style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back(result: true);
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: const Text('Logout'),
           ),
         ],
@@ -80,9 +88,10 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
+                        // ── Foto Profile ──
                         CircleAvatar(
                           radius: 48,
-                          backgroundColor: Colors.white,
+                          backgroundColor: const Color(0xFF8B5CF6),
                           backgroundImage:
                               user?.foto != null && user!.foto!.isNotEmpty
                               ? NetworkImage(user.foto!)
@@ -90,13 +99,13 @@ class ProfileScreen extends StatelessWidget {
                           child: user?.foto == null || user!.foto!.isEmpty
                               ? const Icon(
                                   Icons.person,
+                                  color: Colors.white,
                                   size: 50,
-                                  color: Color(0xFF8B5CF6),
                                 )
                               : null,
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
 
                         Text(
                           user?.name ?? 'Guest',
@@ -154,13 +163,11 @@ class ProfileScreen extends StatelessWidget {
                               "Rp ${formatCurrency(user?.balance ?? 0)}",
                             ),
                           ),
-
                           Container(
                             width: 1,
                             height: 50,
                             color: Colors.white10,
                           ),
-
                           Expanded(
                             child: _statItem(
                               "Donasi",
@@ -188,20 +195,17 @@ class ProfileScreen extends StatelessWidget {
 
                   if (user?.isStreamer == true) ...[
                     _sectionTitle("Streamer"),
-
-                    _menuTile(Icons.dashboard, "Dashboard Streamer", () {}),
-
+                    _menuTile(Icons.dashboard, "Dashboard Streamer", () {
+                      Get.toNamed(Routes.dashboard);
+                    }),
                     _menuTile(Icons.payments, "Withdraw", () {}),
-
                     _menuTile(Icons.account_balance, "Rekening", () {}),
                   ],
 
                   _sectionTitle("Lainnya"),
-
                   _menuTile(Icons.settings, "Pengaturan", () {
                     Get.toNamed(Routes.settings);
                   }),
-
                   _menuTile(Icons.help_outline, "Bantuan", () {}),
 
                   Padding(

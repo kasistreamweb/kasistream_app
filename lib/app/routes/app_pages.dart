@@ -14,6 +14,7 @@ import '../../modules/donation/donate_screen.dart';
 import '../../modules/streamer/streamer_detail_screen.dart';
 import '../../modules/search/search_screen.dart';
 import '../../modules/donation/donation_history_screen.dart';
+import '../../modules/streamer/dashboard_streamer_screen.dart'; // Import dashboard
 import '../middlewares/auth_middleware.dart';
 import '../middlewares/guest_middleware.dart';
 
@@ -54,6 +55,12 @@ class AppPages {
     ),
 
     GetPage(
+      name: Routes.dashboard, // Tambahkan route dashboard
+      page: () => const DashboardStreamerScreen(),
+      middlewares: [AuthMiddleware()],
+    ),
+
+    GetPage(
       name: Routes.wallet,
       page: () => const WalletScreen(),
       middlewares: [AuthMiddleware()],
@@ -89,10 +96,22 @@ class AppPages {
       middlewares: [AuthMiddleware()],
     ),
 
-    GetPage(name: Routes.search, page: () => const SearchScreen()),
+    GetPage(
+      name: Routes.search,
+      page: () => const SearchScreen(),
+      middlewares: [AuthMiddleware()],
+    ),
 
-    GetPage(name: Routes.streamers, page: () => const StreamerScreen()),
+    GetPage(
+      name: Routes.streamers,
+      page: () => const StreamerScreen(),
+      middlewares: [AuthMiddleware()],
+    ),
 
-    GetPage(name: Routes.history, page: () => const DonationHistoryScreen()),
+    GetPage(
+      name: Routes.history,
+      page: () => const DonationHistoryScreen(),
+      middlewares: [AuthMiddleware()],
+    ),
   ];
 }
