@@ -17,7 +17,10 @@ import '../../modules/donation/donation_history_screen.dart';
 import '../../modules/streamer/dashboard_streamer_screen.dart'; // Import dashboard
 import '../middlewares/auth_middleware.dart';
 import '../middlewares/guest_middleware.dart';
-
+import '../../modules/donation/payment_method_screen.dart';
+import '../../modules/donation/payment_summary_screen.dart';
+import '../../modules/donation/payment_success_screen.dart';
+import '../../modules/donation/payment_qris_screen.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -113,5 +116,22 @@ class AppPages {
       page: () => const DonationHistoryScreen(),
       middlewares: [AuthMiddleware()],
     ),
+
+    GetPage(
+      name: Routes.paymentMethod,
+      page: () => const PaymentMethodScreen(),
+    ),
+
+    GetPage(
+      name: Routes.paymentSummary,
+      page: () => const PaymentSummaryScreen(),
+    ),
+
+    GetPage(
+      name: Routes.paymentSuccess,
+      page: () => const PaymentSuccessScreen(),
+    ),
+
+    GetPage(name: Routes.paymentQris, page: () => const PaymentQrisScreen()),
   ];
 }

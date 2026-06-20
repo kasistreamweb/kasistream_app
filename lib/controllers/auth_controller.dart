@@ -106,4 +106,19 @@ class AuthController extends GetxController {
 
     Get.offAllNamed('/login');
   }
+
+  // ── REFRESH USER ──
+  Future<void> refreshUser() async {
+    try {
+      final result = await _authService.profile_screen();
+
+      final userData = UserModel.fromJson(result);
+
+      user.value = userData;
+
+      await StorageService.saveUser(userData);
+    } catch (e) {
+      print('REFRESH USER ERROR: $e');
+    }
+  }
 }

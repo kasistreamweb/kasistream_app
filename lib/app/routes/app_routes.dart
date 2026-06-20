@@ -12,8 +12,8 @@ abstract class Routes {
 
   static const streamerDetail = "/streamer-detail";
   static const donate = "/donate";
+  static const paymentMethod = '/payment-method';
 
-  static const paymentMethod = "/payment-method";
   static const paymentSummary = "/payment-summary";
   static const paymentQris = "/payment-qris";
   static const paymentSuccess = "/payment-success";

@@ -6,14 +6,19 @@ import '../models/dashboard_model.dart';
 class DashboardController extends GetxController {
   final DashboardService _service = DashboardService();
 
-  final RxBool isLoading = false.obs;
+  RxBool isLoading = false.obs;
 
-  final Rxn<DashboardModel> dashboard = Rxn<DashboardModel>();
+  RxInt streamerCount = 0.obs;
+
+  RxInt followingCount = 0.obs;
+
+  RxInt totalDonasi = 0.obs;
+
+  RxInt balance = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
-
     loadDashboard();
   }
 
@@ -21,11 +26,19 @@ class DashboardController extends GetxController {
     try {
       isLoading.value = true;
 
-      final result = await _service.getSummary();
+      final DashboardModel? result = await _service.getSummary();
 
       if (result != null) {
-        dashboard.value = result;
+        streamerCount.value = result.streamerCount;
+
+        followingCount.value = result.followingCount;
+
+        totalDonasi.value = result.totalDonasi;
+
+        balance.value = result.balance;
       }
+    } catch (e) {
+      print(e);
     } finally {
       isLoading.value = false;
     }

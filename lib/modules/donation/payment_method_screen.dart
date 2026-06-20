@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../app/routes/app_routes.dart';
+import '../../controllers/wallet_controller.dart';
+
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key});
 
@@ -9,22 +12,50 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
-  String selectedMethod = "qris";
+  String selectedMethod = "wallet";
 
-  final methods = [
-    {"code": "qris", "title": "QRIS", "icon": Icons.qr_code},
-    {"code": "ovo", "title": "OVO", "icon": Icons.account_balance_wallet},
-    {"code": "dana", "title": "DANA", "icon": Icons.account_balance_wallet},
-    {"code": "gopay", "title": "GoPay", "icon": Icons.account_balance_wallet},
-    {"code": "bca_va", "title": "BCA VA", "icon": Icons.account_balance},
-    {"code": "bni_va", "title": "BNI VA", "icon": Icons.account_balance},
-    {"code": "bri_va", "title": "BRI VA", "icon": Icons.account_balance},
-    {
-      "code": "mandiri_va",
-      "title": "Mandiri VA",
-      "icon": Icons.account_balance,
-    },
+  int get adminFee => 1500;
+
+  final List<PaymentMethod> methods = [
+    PaymentMethod.withCode(
+      'wallet',
+      'Wallet KAistream',
+      Icons.account_balance_wallet,
+    ),
+    PaymentMethod.withCode('qris', 'QRIS', Icons.qr_code),
+    PaymentMethod.withCode('ovo', 'OVO', Icons.account_balance_wallet),
+    PaymentMethod.withCode('dana', 'DANA', Icons.account_balance_wallet),
+    PaymentMethod.withCode('gopay', 'GoPay', Icons.account_balance_wallet),
+    PaymentMethod.withCode('bca_va', 'BCA VA', Icons.account_balance),
+    PaymentMethod.withCode('bni_va', 'BNI VA', Icons.account_balance),
+    PaymentMethod.withCode('bri_va', 'BRI VA', Icons.account_balance),
+    PaymentMethod.withCode('mandiri_va', 'Mandiri VA', Icons.account_balance),
   ];
+
+  String getSubtitle(String title) {
+    switch (title) {
+      case 'Wallet KAistream':
+        return 'Gunakan saldo wallet';
+      case 'QRIS':
+        return 'Scan QR menggunakan aplikasi pembayaran';
+      case 'OVO':
+        return 'Bayar dengan OVO';
+      case 'DANA':
+        return 'Bayar dengan DANA';
+      case 'GoPay':
+        return 'Bayar dengan GoPay';
+      case 'BCA VA':
+        return 'Transfer Virtual Account BCA';
+      case 'BNI VA':
+        return 'Transfer Virtual Account BNI';
+      case 'BRI VA':
+        return 'Transfer Virtual Account BRI';
+      case 'Mandiri VA':
+        return 'Transfer Virtual Account Mandiri';
+      default:
+        return '';
+    }
+  }
 
   String rupiah(int value) {
     return value.toString().replaceAllMapped(
@@ -37,7 +68,24 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Widget build(BuildContext context) {
     final data = Get.arguments as Map<String, dynamic>;
 
-    final int total = data["total"];
+    // Ambil data dari WalletController
+    final walletController = Get.find<WalletController>();
+
+    final int subtotal = int.tryParse(data["subtotal"].toString()) ?? 0;
+
+    final int adminFee = int.tryParse(data["admin_fee"].toString()) ?? 1500;
+
+    final int grandTotal = int.tryParse(data["total"].toString()) ?? 0;
+
+    // Ambil saldo wallet dari controller
+    final int walletBalance = walletController.balance.value;
+
+    final bool walletEnough = walletBalance >= grandTotal;
+
+    // Auto pindah metode jika saldo tidak cukup
+    if (!walletEnough && selectedMethod == "wallet") {
+      selectedMethod = "qris";
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFF171533),
@@ -45,76 +93,256 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         title: const Text("Metode Pembayaran"),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
       ),
       body: Column(
         children: [
+          // Info Saldo Wallet
+          Container(
+            margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF25245E),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.account_balance_wallet,
+                  color: Color(0xFF8B5CF6),
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  "Saldo Wallet",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                const Spacer(),
+                Obx(
+                  () => Text(
+                    "Rp ${rupiah(walletController.balance.value)}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(20),
               itemCount: methods.length,
               itemBuilder: (context, index) {
                 final method = methods[index];
+                final selected = selectedMethod == method.code;
 
-                final selected = selectedMethod == method["code"];
+                // Disable wallet
+                final bool walletDisabled =
+                    method.code == "wallet" && !walletEnough;
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
-                    color: selected
+                    color: walletDisabled
+                        ? Colors.grey.shade800
+                        : selected
                         ? const Color(0xFF8B5CF6)
                         : const Color(0xFF25245E),
                     borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: selected
+                          ? const Color(0xFF8B5CF6)
+                          : Colors.white.withOpacity(0.05),
+                      width: selected ? 2 : 1,
+                    ),
                   ),
                   child: RadioListTile<String>(
-                    value: method["code"].toString(),
+                    value: method.code,
                     groupValue: selectedMethod,
                     activeColor: Colors.white,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedMethod = value!;
-                      });
-                    },
-                    title: Text(method["title"].toString()),
-                    secondary: Icon(method["icon"] as IconData),
+                    onChanged: walletDisabled
+                        ? null
+                        : (value) {
+                            setState(() {
+                              selectedMethod = value!;
+                            });
+                          },
+                    title: Text(
+                      method.title,
+                      style: TextStyle(
+                        color: walletDisabled
+                            ? Colors.grey
+                            : selected
+                            ? Colors.white
+                            : Colors.white,
+                        fontWeight: selected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    subtitle: Text(
+                      walletDisabled
+                          ? "Saldo wallet tidak mencukupi"
+                          : getSubtitle(method.title),
+                      style: TextStyle(
+                        color: walletDisabled
+                            ? Colors.grey
+                            : selected
+                            ? Colors.white70
+                            : Colors.white54,
+                        fontSize: 12,
+                      ),
+                    ),
+                    secondary: Icon(
+                      method.icon,
+                      color: walletDisabled
+                          ? Colors.grey
+                          : selected
+                          ? Colors.white
+                          : const Color(0xFF8B5CF6),
+                    ),
                   ),
                 );
               },
             ),
           ),
 
+          // ── Bottom Section ──
           Container(
             padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C2147),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+              border: Border(
+                top: BorderSide(color: Colors.white.withOpacity(0.05)),
+              ),
+            ),
             child: Column(
               children: [
-                Row(
+                // Rincian Fee
+                Column(
                   children: [
-                    const Text("Total Bayar"),
-                    const Spacer(),
-                    Text(
-                      "Rp ${rupiah(total)}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+                    // Subtotal
+                    Row(
+                      children: [
+                        const Text(
+                          "Subtotal",
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                        const Spacer(),
+                        Text(
+                          "Rp ${rupiah(subtotal)}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // Admin Fee
+                    Row(
+                      children: [
+                        const Text(
+                          "Admin Fee",
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                        const Spacer(),
+                        Text(
+                          "Rp ${rupiah(adminFee)}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+
+                    const Divider(color: Colors.white24, height: 24),
+
+                    // Total Bayar
+                    Row(
+                      children: [
+                        const Text(
+                          "Total Bayar",
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                        const Spacer(),
+                        Text(
+                          "Rp ${rupiah(grandTotal)}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
 
                 const SizedBox(height: 16),
 
-                SizedBox(
+                Container(
                   width: double.infinity,
                   height: 56,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF8B5CF6), Color(0xFF6D5BFF)],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF8B5CF6).withOpacity(0.3),
+                        blurRadius: 20,
+                      ),
+                    ],
+                  ),
                   child: ElevatedButton(
                     onPressed: () {
-                      data["payment_method"] = selectedMethod;
+                      try {
+                        data["payment_method"] = selectedMethod;
+                        data["admin_fee"] = adminFee;
+                        data["grand_total"] = grandTotal;
 
-                      Get.toNamed("/payment-summary", arguments: data);
+                        print("=== NAVIGASI KE PAYMENT SUMMARY ===");
+                        print("Route: ${Routes.paymentSummary}");
+                        print("Data: $data");
+
+                        Get.toNamed(Routes.paymentSummary, arguments: data);
+
+                        print("Navigasi berhasil dipanggil");
+                      } catch (e) {
+                        print("Error: $e");
+                        Get.snackbar(
+                          "Error",
+                          "Terjadi kesalahan: $e",
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF8B5CF6),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    child: const Text("LANJUTKAN"),
+                    child: const Text(
+                      "LANJUTKAN",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -124,4 +352,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       ),
     );
   }
+}
+
+class PaymentMethod {
+  final String code;
+  final String title;
+  final IconData icon;
+
+  PaymentMethod.withCode(this.code, this.title, this.icon);
 }

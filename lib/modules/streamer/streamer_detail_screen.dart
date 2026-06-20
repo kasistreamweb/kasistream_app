@@ -199,7 +199,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 30),
 
-                          // Stats Row
+                          // Stats Row - Followers langsung dari streamer
                           Row(
                             children: [
                               Expanded(
@@ -316,7 +316,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 30),
 
-                          // Buttons Row
+                          // Buttons Row - Follow/Unfollow dengan Obx
                           Row(
                             children: [
                               Expanded(
@@ -339,18 +339,56 @@ class StreamerDetailScreen extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  child: SizedBox.expand(
-                                    child: ElevatedButton.icon(
+                                  child: Obx(
+                                    () => ElevatedButton.icon(
                                       onPressed: () async {
-                                        await controller.follow(streamer.id);
-                                        Get.snackbar(
-                                          "Berhasil",
-                                          "Streamer berhasil diikuti",
-                                          snackPosition: SnackPosition.BOTTOM,
-                                        );
+                                        try {
+                                          if (controller.isFollowing.value) {
+                                            // UNFOLLOW
+                                            await controller.unfollow(
+                                              streamer.id,
+                                            );
+                                            await controller.loadStreamers();
+                                            controller.isFollowing.value =
+                                                false;
+                                            Get.snackbar(
+                                              "Berhasil",
+                                              "Berhasil unfollow streamer",
+                                              snackPosition:
+                                                  SnackPosition.BOTTOM,
+                                            );
+                                          } else {
+                                            // FOLLOW
+                                            await controller.follow(
+                                              streamer.id,
+                                            );
+                                            await controller.loadStreamers();
+                                            controller.isFollowing.value = true;
+                                            Get.snackbar(
+                                              "Berhasil",
+                                              "Streamer berhasil diikuti",
+                                              snackPosition:
+                                                  SnackPosition.BOTTOM,
+                                            );
+                                          }
+                                        } catch (e) {
+                                          Get.snackbar(
+                                            "Error",
+                                            e.toString(),
+                                            snackPosition: SnackPosition.BOTTOM,
+                                          );
+                                        }
                                       },
-                                      icon: const Icon(Icons.person_add),
-                                      label: const Text("Follow"),
+                                      icon: Icon(
+                                        controller.isFollowing.value
+                                            ? Icons.person_remove
+                                            : Icons.person_add,
+                                      ),
+                                      label: Text(
+                                        controller.isFollowing.value
+                                            ? "Following"
+                                            : "Follow",
+                                      ),
                                       style: ElevatedButton.styleFrom(
                                         elevation: 0,
                                         backgroundColor: Colors.transparent,

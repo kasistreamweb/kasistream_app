@@ -7,12 +7,16 @@ class StreamerController extends GetxController {
   final StreamerService _service = StreamerService();
 
   RxList<StreamerModel> streamers = <StreamerModel>[].obs;
-
   RxList<StreamerModel> filteredStreamers = <StreamerModel>[].obs;
 
   RxBool isLoading = false.obs;
-
   RxString searchQuery = ''.obs;
+
+  // TAMBAHKAN INI
+  RxBool isFollowing = false.obs;
+
+  // TAMBAHKAN INI
+  RxInt followersCount = 0.obs;
 
   @override
   void onInit() {
@@ -27,7 +31,6 @@ class StreamerController extends GetxController {
       final result = await _service.getStreamers();
 
       streamers.value = result;
-
       filteredStreamers.value = result;
     } finally {
       isLoading.value = false;
@@ -54,22 +57,33 @@ class StreamerController extends GetxController {
   }
 
   Future<void> follow(int streamerId) async {
-    await _service.follow(streamerId);
-
-    await loadStreamers();
+    try {
+      isFollowing.value = true;
+      await _service.follow(streamerId);
+      await loadStreamers();
+    } finally {
+      isFollowing.value = false;
+    }
   }
 
   Future<void> unfollow(int streamerId) async {
-    await _service.unfollow(streamerId);
+    try {
+      isFollowing.value = true;
+      await _service.unfollow(streamerId);
+      await loadStreamers();
+    } finally {
+      isFollowing.value = false;
+    }
+  }
 
-    await loadStreamers();
+  // TAMBAHKAN INI
+  void setFollowers(int count) {
+    followersCount.value = count;
   }
 
   List<StreamerModel> get topStreamers {
     final list = [...streamers];
-
     list.sort((a, b) => b.followers.compareTo(a.followers));
-
     return list.take(3).toList();
   }
 }

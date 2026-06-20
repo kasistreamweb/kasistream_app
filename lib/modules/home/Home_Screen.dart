@@ -37,6 +37,8 @@ class HomeScreen extends StatelessWidget {
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: () async {
+              await Get.find<AuthController>().refreshUser();
+
               await Future.wait([
                 streamerController.loadStreamers(),
                 dashboardController.loadDashboard(),
@@ -49,7 +51,7 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(auth),
+                  _buildHeader(auth, dashboardController),
                   const SizedBox(height: 12),
                   _buildDashboardStats(dashboardController),
                   const SizedBox(height: 16),
@@ -71,7 +73,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(AuthController auth) {
+  Widget _buildHeader(
+    AuthController auth,
+    DashboardController dashboardController,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -160,12 +165,15 @@ class HomeScreen extends StatelessWidget {
                       style: TextStyle(color: Colors.white70, fontSize: 10),
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      "Rp ${_formatCurrency(auth.user.value?.balance ?? 0)}",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    // ── GANTI INI ──
+                    Obx(
+                      () => Text(
+                        "Rp ${_formatCurrency(dashboardController.balance.value)}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -192,59 +200,54 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildDashboardStats(DashboardController dashboard) {
-    return Obx(() {
-      final data = dashboard.dashboard.value;
-      if (data == null) {
-        return const SizedBox();
-      }
-
-      return Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E1B4B).withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: _statItem(
-                Icons.live_tv,
-                "${data.streamerCount}",
-                "Streamer",
-                const Color(0xFF8B5CF6),
-              ),
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1B4B).withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _statItem(
+              Icons.live_tv,
+              "${dashboard.streamerCount.value}",
+              "Streamer",
+              const Color(0xFF8B5CF6),
             ),
-            Container(
-              width: 1,
-              height: 32,
-              color: Colors.white.withOpacity(0.05),
+          ),
+          Container(
+            width: 1,
+            height: 32,
+            color: Colors.white.withOpacity(0.05),
+          ),
+          Expanded(
+            child: _statItem(
+              Icons.favorite,
+              "${dashboard.followingCount.value}",
+              "Following",
+              Colors.pink,
             ),
-            Expanded(
-              child: _statItem(
-                Icons.favorite,
-                "${data.followingCount}",
-                "Following",
-                Colors.pink,
-              ),
-            ),
-            Container(
-              width: 1,
-              height: 32,
-              color: Colors.white.withOpacity(0.05),
-            ),
-            Expanded(
-              child: _statItem(
+          ),
+          Container(
+            width: 1,
+            height: 32,
+            color: Colors.white.withOpacity(0.05),
+          ),
+          Expanded(
+            child: Obx(
+              () => _statItem(
                 Icons.volunteer_activism,
-                "Rp ${_formatCurrency(data.totalDonasi)}",
+                "Rp ${_formatCurrency(dashboard.totalDonasi.value)}",
                 "Donasi",
                 Colors.green,
               ),
             ),
-          ],
-        ),
-      );
-    });
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _statItem(IconData icon, String value, String label, Color color) {

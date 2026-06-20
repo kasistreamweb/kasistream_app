@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../app/routes/app_routes.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/dashboard_controller.dart'; // TAMBAHKAN IMPORT
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
@@ -58,6 +59,7 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: const Color(0xFF060B22),
       body: Obx(() {
         final user = auth.user.value;
+        final dashboardController = Get.find<DashboardController>();
 
         return Container(
           decoration: const BoxDecoration(
@@ -157,10 +159,26 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
+                          // ── SALDO ──
                           Expanded(
-                            child: _statItem(
-                              "Saldo",
-                              "Rp ${formatCurrency(user?.balance ?? 0)}",
+                            child: Column(
+                              children: [
+                                Obx(
+                                  () => Text(
+                                    "Rp ${formatCurrency(dashboardController.balance.value)}",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  "Saldo",
+                                  style: TextStyle(color: Colors.white70),
+                                ),
+                              ],
                             ),
                           ),
                           Container(
@@ -168,10 +186,26 @@ class ProfileScreen extends StatelessWidget {
                             height: 50,
                             color: Colors.white10,
                           ),
+                          // ── DONASI ──
                           Expanded(
-                            child: _statItem(
-                              "Donasi",
-                              "Rp ${formatCurrency(user?.totalDonasi ?? 0)}",
+                            child: Column(
+                              children: [
+                                Obx(
+                                  () => Text(
+                                    "Rp ${formatCurrency(dashboardController.totalDonasi.value)}",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  "Donasi",
+                                  style: TextStyle(color: Colors.white70),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -250,23 +284,6 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _statItem(String title, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(title, style: const TextStyle(color: Colors.white70)),
-      ],
     );
   }
 

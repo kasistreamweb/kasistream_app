@@ -107,4 +107,29 @@ class AuthService {
       print('LOGOUT ERROR: $e');
     }
   }
+
+  // ── PROFILE ──
+  Future<Map<String, dynamic>> profile_screen() async {
+    try {
+      final token = await StorageService.getToken();
+
+      final response = await http.get(
+        Uri.parse('${ApiService.baseUrl}/profile'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('====================');
+      print('PROFILE STATUS: ${response.statusCode}');
+      print('PROFILE BODY: ${response.body}');
+      print('====================');
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      print('PROFILE ERROR: $e');
+      return {'success': false, 'message': e.toString()};
+    }
+  }
 }

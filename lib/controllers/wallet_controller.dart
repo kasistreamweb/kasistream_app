@@ -36,6 +36,7 @@ class WalletController extends GetxController {
     }
   }
 
+  // ── METHOD LOAD WALLET ──
   Future<void> loadWallet() async {
     try {
       isLoading.value = true;
