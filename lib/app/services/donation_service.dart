@@ -78,4 +78,45 @@ class DonationService {
 
     return jsonDecode(response.body);
   }
+
+  // ── GUEST CREATE QRIS ──
+  Future<Map<String, dynamic>> guestCreateQris({
+    required int streamerId,
+    required String guestName,
+    required String guestPhone,
+    required int nominal,
+    required String pesan,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${ApiService.baseUrl}/guest/donate-qris'),
+      headers: {'Accept': 'application/json'},
+      body: {
+        'streamer_id': streamerId.toString(),
+        'guest_name': guestName,
+        'guest_phone': guestPhone,
+        'nominal': nominal.toString(),
+        'pesan': pesan,
+      },
+    );
+
+    print('=== GUEST CREATE QRIS ===');
+    print('Status: ${response.statusCode}');
+    print('Body: ${response.body}');
+
+    return jsonDecode(response.body);
+  }
+
+  // ── GUEST PAY ONOPAY ──
+  Future<Map<String, dynamic>> guestPayOnopay(int donasiId) async {
+    final response = await http.post(
+      Uri.parse('${ApiService.baseUrl}/guest/pay-onopay/$donasiId'),
+      headers: {'Accept': 'application/json'},
+    );
+
+    print('=== GUEST PAY ONOPAY ===');
+    print('Status: ${response.statusCode}');
+    print('Body: ${response.body}');
+
+    return jsonDecode(response.body);
+  }
 }

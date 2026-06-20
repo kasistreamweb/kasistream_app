@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../app/routes/app_routes.dart';
+import '../../controllers/auth_controller.dart'; // TAMBAHKAN IMPORT
 import '../../controllers/donation_controller.dart';
 import '../../models/streamer_model.dart';
 
@@ -18,6 +19,11 @@ class _DonateScreenState extends State<DonateScreen> {
   final TextEditingController nominalController = TextEditingController();
 
   final TextEditingController pesanController = TextEditingController();
+
+  // ── TAMBAHKAN INI ──
+  final TextEditingController guestNameController = TextEditingController();
+
+  final TextEditingController guestPhoneController = TextEditingController();
 
   final List<int> presets = [10000, 25000, 50000, 100000, 250000, 500000];
 
@@ -43,7 +49,6 @@ class _DonateScreenState extends State<DonateScreen> {
     return selectedNominal + fiturTambahan;
   }
 
-  // TAMBAHKAN INI
   int get adminFee {
     return 1500;
   }
@@ -62,6 +67,8 @@ class _DonateScreenState extends State<DonateScreen> {
   @override
   Widget build(BuildContext context) {
     final StreamerModel streamer = Get.arguments as StreamerModel;
+    final auth = Get.find<AuthController>();
+    final isGuest = auth.user.value == null;
 
     return Scaffold(
       backgroundColor: const Color(0xFF171533),
@@ -87,6 +94,61 @@ class _DonateScreenState extends State<DonateScreen> {
           child: Column(
             children: [
               _buildStreamerCard(streamer),
+
+              // ── GUEST FORM ──
+              if (isGuest) ...[
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF25245E),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  ),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: guestNameController,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          hintText: 'Nama Donatur',
+                          hintStyle: TextStyle(color: Colors.white38),
+                          filled: true,
+                          fillColor: Color(0xFF1C2147),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: guestPhoneController,
+                        keyboardType: TextInputType.phone,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          hintText: 'Nomor OnoPay',
+                          hintStyle: TextStyle(color: Colors.white38),
+                          filled: true,
+                          fillColor: Color(0xFF1C2147),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 24),
 
@@ -124,6 +186,31 @@ class _DonateScreenState extends State<DonateScreen> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
+                    // ── VALIDASI GUEST ──
+                    if (isGuest) {
+                      if (guestNameController.text.trim().isEmpty) {
+                        Get.snackbar(
+                          'Nama Donatur Kosong',
+                          'Masukkan nama donatur terlebih dahulu',
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                        return;
+                      }
+
+                      if (guestPhoneController.text.trim().isEmpty) {
+                        Get.snackbar(
+                          'Nomor OnoPay Kosong',
+                          'Masukkan nomor OnoPay terlebih dahulu',
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                        return;
+                      }
+                    }
+
                     print("MENUJU PAYMENT METHOD");
 
                     Get.toNamed(
@@ -140,6 +227,10 @@ class _DonateScreenState extends State<DonateScreen> {
                         "highlight": highlightDonasi,
                         "pin": pinPesan,
                         "streamer": Get.arguments,
+                        // ── DATA GUEST ──
+                        "guest_name": guestNameController.text,
+                        "guest_phone": guestPhoneController.text,
+                        "is_guest": isGuest,
                       },
                     );
                   },
