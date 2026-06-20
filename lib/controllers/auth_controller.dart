@@ -4,6 +4,15 @@ import '../app/services/auth_service.dart';
 import '../app/services/storage_service.dart';
 import '../models/user_model.dart';
 
+// ── IMPORT ──
+import 'main_controller.dart';
+import 'dashboard_controller.dart';
+import 'activity_controller.dart';
+import 'profile_controller.dart';
+import 'streamer_controller.dart';
+import 'donation_controller.dart';
+import 'wallet_controller.dart';
+
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
 
@@ -46,6 +55,50 @@ class AuthController extends GetxController {
 
         isLoggedIn.value = true;
 
+        // ── LOAD DATA ──
+        if (Get.isRegistered<DashboardController>()) {
+          await Get.find<DashboardController>().loadDashboard();
+        }
+
+        if (Get.isRegistered<WalletController>()) {
+          await Get.find<WalletController>().loadWallet();
+        }
+
+        if (Get.isRegistered<ActivityController>()) {
+          await Get.find<ActivityController>().loadActivities();
+        }
+
+        // ── INIT CONTROLLERS ──
+        if (!Get.isRegistered<MainController>()) {
+          Get.put(MainController());
+        }
+
+        if (!Get.isRegistered<DashboardController>()) {
+          Get.put(DashboardController());
+        }
+
+        if (!Get.isRegistered<ActivityController>()) {
+          Get.put(ActivityController());
+        }
+
+        if (!Get.isRegistered<ProfileController>()) {
+          Get.put(ProfileController());
+        }
+
+        if (!Get.isRegistered<StreamerController>()) {
+          Get.put(StreamerController());
+        }
+
+        if (!Get.isRegistered<DonationController>()) {
+          Get.put(DonationController());
+        }
+
+        if (!Get.isRegistered<WalletController>()) {
+          Get.put(WalletController());
+        }
+
+        Get.offAllNamed('/main');
+
         return true;
       }
 
@@ -85,6 +138,50 @@ class AuthController extends GetxController {
 
         isLoggedIn.value = true;
 
+        // ── LOAD DATA ──
+        if (Get.isRegistered<DashboardController>()) {
+          await Get.find<DashboardController>().loadDashboard();
+        }
+
+        if (Get.isRegistered<WalletController>()) {
+          await Get.find<WalletController>().loadWallet();
+        }
+
+        if (Get.isRegistered<ActivityController>()) {
+          await Get.find<ActivityController>().loadActivities();
+        }
+
+        // ── INIT CONTROLLERS ──
+        if (!Get.isRegistered<MainController>()) {
+          Get.put(MainController());
+        }
+
+        if (!Get.isRegistered<DashboardController>()) {
+          Get.put(DashboardController());
+        }
+
+        if (!Get.isRegistered<ActivityController>()) {
+          Get.put(ActivityController());
+        }
+
+        if (!Get.isRegistered<ProfileController>()) {
+          Get.put(ProfileController());
+        }
+
+        if (!Get.isRegistered<StreamerController>()) {
+          Get.put(StreamerController());
+        }
+
+        if (!Get.isRegistered<DonationController>()) {
+          Get.put(DonationController());
+        }
+
+        if (!Get.isRegistered<WalletController>()) {
+          Get.put(WalletController());
+        }
+
+        Get.offAllNamed('/main');
+
         return true;
       }
 
@@ -97,12 +194,17 @@ class AuthController extends GetxController {
     }
   }
 
+  // ── LOGOUT ──
   Future<void> logout() async {
     await StorageService.clearAll();
 
     user.value = null;
 
     isLoggedIn.value = false;
+
+    if (Get.isRegistered<MainController>()) {
+      Get.find<MainController>().currentIndex.value = 0;
+    }
 
     Get.offAllNamed('/login');
   }
