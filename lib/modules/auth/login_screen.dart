@@ -157,9 +157,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.topCenter,
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(top: 80),
+                          margin: const EdgeInsets.only(top: 70),
                           width: double.infinity,
-                          padding: const EdgeInsets.fromLTRB(28, 112, 28, 30),
+                          padding: const EdgeInsets.fromLTRB(28, 105, 28, 30),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               begin: Alignment.topLeft,
@@ -468,8 +468,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
+                        // ── LOGO ──
                         Positioned(
-                          top: -20,
+                          top: -40,
                           child: Container(
                             decoration: BoxDecoration(
                               boxShadow: [
@@ -482,7 +483,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             child: Image.asset(
                               'assets/images/logo.png',
-                              width: 270,
+                              width: 250,
                               fit: BoxFit.contain,
                             ),
                           ),

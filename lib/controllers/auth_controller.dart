@@ -12,6 +12,7 @@ import 'profile_controller.dart';
 import 'streamer_controller.dart';
 import 'donation_controller.dart';
 import 'wallet_controller.dart';
+import 'streamer_dashboard_controller.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
@@ -97,6 +98,12 @@ class AuthController extends GetxController {
           Get.put(WalletController());
         }
 
+        if (!Get.isRegistered<StreamerDashboardController>()) {
+          Get.put(StreamerDashboardController());
+        }
+
+        await Get.find<StreamerDashboardController>().loadDashboard();
+
         Get.offAllNamed('/main');
 
         return true;
@@ -180,6 +187,12 @@ class AuthController extends GetxController {
           Get.put(WalletController());
         }
 
+        if (!Get.isRegistered<StreamerDashboardController>()) {
+          Get.put(StreamerDashboardController());
+        }
+
+        await Get.find<StreamerDashboardController>().loadDashboard();
+
         Get.offAllNamed('/main');
 
         return true;
@@ -201,6 +214,16 @@ class AuthController extends GetxController {
     user.value = null;
 
     isLoggedIn.value = false;
+
+    // RESET DASHBOARD STREAMER
+    if (Get.isRegistered<StreamerDashboardController>()) {
+      Get.find<StreamerDashboardController>().clearData();
+    }
+
+    // RESET WALLET
+    if (Get.isRegistered<WalletController>()) {
+      Get.find<WalletController>().clearData();
+    }
 
     if (Get.isRegistered<MainController>()) {
       Get.find<MainController>().currentIndex.value = 0;

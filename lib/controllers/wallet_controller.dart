@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-
+import 'package:flutter/material.dart';
 import '../app/services/wallet_service.dart';
 
 class WalletController extends GetxController {
@@ -30,7 +30,37 @@ class WalletController extends GetxController {
         namaRekening: namaRekening,
       );
 
-      return true;
+      if (result['success'] == true) {
+        await loadWallet();
+        Get.snackbar(
+          'Berhasil',
+          result['message'] ?? 'Withdraw berhasil',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        return true;
+      }
+
+      Get.snackbar(
+        'Gagal',
+        result['message'] ?? 'Withdraw gagal',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+
+      return false;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+
+      return false;
     } finally {
       isLoading.value = false;
     }
@@ -54,14 +84,37 @@ class WalletController extends GetxController {
           int.tryParse(summary['pending_withdraw'].toString()) ?? 0;
 
       history.value = await _service.getHistory();
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memuat data wallet: ${e.toString()}',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // ── CLEAR DATA ──
+  void clearData() {
+    balance.value = 0;
+    totalDonasi.value = 0;
+    totalWithdraw.value = 0;
+    pendingWithdraw.value = 0;
+    history.clear();
   }
 
   @override
   void onInit() {
     super.onInit();
     loadWallet();
+  }
+
+  @override
+  void onClose() {
+    clearData();
+    super.onClose();
   }
 }

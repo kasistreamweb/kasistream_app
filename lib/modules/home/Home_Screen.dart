@@ -22,8 +22,8 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   ) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
-        bottomLeft: Radius.circular(45),
-        bottomRight: Radius.circular(45),
+        bottomLeft: Radius.circular(15),
+        bottomRight: Radius.circular(15),
       ),
       child: Container(
         decoration: const BoxDecoration(
@@ -39,10 +39,10 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 310;
+  double get maxExtent => 260;
 
   @override
-  double get minExtent => 310;
+  double get minExtent => 260;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
@@ -66,6 +66,9 @@ class HomeScreen extends StatelessWidget {
     final streamerController = Get.find<StreamerController>();
     final dashboardController = Get.find<DashboardController>();
     final activityController = Get.find<ActivityController>();
+
+    // status tampil/sembunyi saldo, ala tombol mata di header OVO
+    final RxBool isBalanceVisible = true.obs;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -165,28 +168,32 @@ class HomeScreen extends StatelessWidget {
                 child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
-                    // ── HEADER + CARD SALDO (STICKY) ──
+                    // ── HEADER + CARD SALDO (STICKY, ALA OVO) ──
                     SliverPersistentHeader(
                       pinned: true,
                       delegate: _StickyHeaderDelegate(
                         child: Container(
-                          padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // ── LOGO + PREMIUM (LOGO DIPERBESAR) ──
+                              // ── LOGO + PREMIUM ──
                               Row(
                                 children: [
-                                  Image.asset(
-                                    'assets/images/logo1.png',
-                                    height: 100, // DIPERBESAR dari 70 ke 100
-                                    fit: BoxFit.contain,
+                                  const Spacer(flex: 1),
+                                  Transform.scale(
+                                    scale: 2.0,
+                                    child: Image.asset(
+                                      'assets/images/logo1.png',
+                                      height: 50,
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
-                                  const Spacer(),
+                                  const Spacer(flex: 10),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 12,
-                                      vertical: 4,
+                                      vertical: 6,
                                     ),
                                     decoration: BoxDecoration(
                                       color: Colors.white.withOpacity(0.12),
@@ -196,23 +203,23 @@ class HomeScreen extends StatelessWidget {
                                       'Premium',
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 11,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 4),
 
-                              // ── CARD SALDO ──
+                              // ── CARD SALDO (LAYOUT ALA OVO) ──
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.fromLTRB(
                                   20,
                                   16,
                                   20,
-                                  30,
+                                  20,
                                 ),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
@@ -224,114 +231,147 @@ class HomeScreen extends StatelessWidget {
                                       Color(0xFF6D5BFF),
                                     ],
                                   ),
-                                  borderRadius: BorderRadius.circular(28),
+                                  borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color(
                                         0xFF8B5CF6,
-                                      ).withOpacity(0.45),
-                                      blurRadius: 40,
+                                      ).withOpacity(0.4),
+                                      blurRadius: 35,
                                       spreadRadius: 2,
-                                      offset: const Offset(0, 12),
+                                      offset: const Offset(0, 10),
                                     ),
                                   ],
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // Baris atas: ikon dompet, "Total Saldo",
+                                    // toggle mata (tampil/sembunyi), pill nama user
                                     Row(
                                       children: [
                                         Container(
-                                          padding: const EdgeInsets.all(8),
+                                          padding: const EdgeInsets.all(6),
                                           decoration: BoxDecoration(
                                             color: Colors.white.withOpacity(
                                               0.15,
                                             ),
                                             borderRadius: BorderRadius.circular(
-                                              12,
+                                              10,
                                             ),
                                           ),
                                           child: const Icon(
                                             Icons.account_balance_wallet,
                                             color: Colors.white,
-                                            size: 20,
+                                            size: 16,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        const Text(
+                                          'Total Saldo',
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        GestureDetector(
+                                          onTap: () => isBalanceVisible.value =
+                                              !isBalanceVisible.value,
+                                          child: Obx(
+                                            () => Icon(
+                                              isBalanceVisible.value
+                                                  ? Icons.visibility_outlined
+                                                  : Icons
+                                                        .visibility_off_outlined,
+                                              color: Colors.white70,
+                                              size: 14,
+                                            ),
                                           ),
                                         ),
                                         const Spacer(),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Get.toNamed(Routes.wallet);
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 4,
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(
+                                              0.15,
                                             ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(
-                                                0.1,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              14,
                                             ),
-                                            child: const Row(
-                                              children: [
-                                                Text(
-                                                  'Tap untuk lihat',
-                                                  style: TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 10,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 4),
-                                                Icon(
-                                                  Icons.arrow_forward,
-                                                  color: Colors.white70,
-                                                  size: 12,
-                                                ),
-                                              ],
+                                          ),
+                                          child: Text(
+                                            auth.user.value?.name ?? 'User',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 4),
-                                    const Text(
-                                      'Total Saldo',
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Obx(
-                                      () => Text(
-                                        'Rp ${_formatCurrency(dashboardController.balance.value)}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.bold,
+                                    const SizedBox(height: 8),
+
+                                    // Saldo besar, tap untuk tampil/sembunyi (ala OVO)
+                                    GestureDetector(
+                                      onTap: () => isBalanceVisible.value =
+                                          !isBalanceVisible.value,
+                                      child: Obx(
+                                        () => Text(
+                                          isBalanceVisible.value
+                                              ? 'Rp ${_formatCurrency(dashboardController.balance.value)}'
+                                              : 'Tap untuk lihat',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.15),
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: Text(
-                                        auth.user.value?.name ?? 'User',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
+                                    const SizedBox(height: 16),
+
+                                    // Baris aksi cepat ala OVO:
+                                    // Top Up, Transfer, Tarik Tunai, History
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _quickAction(
+                                            icon: Icons.add,
+                                            label: 'Top Up',
+                                            onTap: () =>
+                                                Get.toNamed(Routes.wallet),
+                                          ),
                                         ),
-                                      ),
+                                        Expanded(
+                                          child: _quickAction(
+                                            icon: Icons.north_east,
+                                            label: 'Transfer',
+                                            onTap: () =>
+                                                Get.toNamed(Routes.wallet),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: _quickAction(
+                                            icon: Icons.south_west,
+                                            label: 'Tarik Tunai',
+                                            onTap: () =>
+                                                Get.toNamed(Routes.wallet),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: _quickAction(
+                                            icon: Icons.receipt_long,
+                                            label: 'History',
+                                            onTap: () =>
+                                                Get.toNamed(Routes.wallet),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -375,21 +415,57 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // ── TOMBOL AKSI CEPAT ALA HEADER OVO ──
+  // (Top Up / Transfer / Tarik Tunai / History)
+  Widget _quickAction({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: const Color(0xFF6D5BFF), size: 18),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDashboardStats(DashboardController dashboard) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Color(0xFF1C1848), Color(0xFF1A1640)],
         ),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
-            blurRadius: 25,
-            offset: const Offset(0, 10),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -405,7 +481,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Container(
             width: 1,
-            height: 32,
+            height: 30,
             color: Colors.white.withOpacity(0.05),
           ),
           Expanded(
@@ -418,7 +494,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Container(
             width: 1,
-            height: 32,
+            height: 30,
             color: Colors.white.withOpacity(0.05),
           ),
           Expanded(
@@ -439,18 +515,18 @@ class HomeScreen extends StatelessWidget {
   Widget _statItem(IconData icon, String value, String label, Color color) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 18),
-        const SizedBox(height: 4),
+        Icon(icon, color: color, size: 16),
+        const SizedBox(height: 3),
         Text(
           value,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: 12,
+            fontSize: 11,
           ),
           textAlign: TextAlign.center,
         ),
-        Text(label, style: TextStyle(color: Colors.white60, fontSize: 9)),
+        Text(label, style: TextStyle(color: Colors.white60, fontSize: 8)),
       ],
     );
   }
@@ -466,7 +542,7 @@ class HomeScreen extends StatelessWidget {
               "🔥 Top Streamer",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 15,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -484,18 +560,18 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(
                   color: Color(0xFF8B5CF6),
                   fontWeight: FontWeight.w600,
-                  fontSize: 11,
+                  fontSize: 12,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Obx(() {
           if (streamerController.isLoading.value) {
             return const Center(
               child: Padding(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(20),
                 child: CircularProgressIndicator(),
               ),
             );
@@ -503,10 +579,10 @@ class HomeScreen extends StatelessWidget {
 
           if (streamerController.streamers.isEmpty) {
             return Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: const Color(0xFF1E1B4B).withOpacity(0.5),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: const Center(
                 child: Column(
@@ -514,12 +590,12 @@ class HomeScreen extends StatelessWidget {
                     Icon(
                       Icons.person_off_rounded,
                       color: Colors.white54,
-                      size: 28,
+                      size: 32,
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 8),
                     Text(
                       "Belum ada streamer",
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                      style: TextStyle(color: Colors.white70, fontSize: 13),
                     ),
                   ],
                 ),
@@ -528,7 +604,7 @@ class HomeScreen extends StatelessWidget {
           }
 
           return SizedBox(
-            height: 220,
+            height: 320,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: streamerController.streamers.length,
@@ -544,62 +620,79 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _streamerCard(StreamerModel streamer, int rank) {
+    // Warna badge rank: emas utk #1, perak utk #2, perunggu utk #3
+    Color rankColor;
+    switch (rank) {
+      case 1:
+        rankColor = const Color(0xFFFFD700);
+        break;
+      case 2:
+        rankColor = const Color(0xFFC0C0C0);
+        break;
+      case 3:
+        rankColor = const Color(0xFFCD7F32);
+        break;
+      default:
+        rankColor = Colors.white.withOpacity(0.5);
+    }
+
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.streamerDetail, arguments: streamer),
       child: Container(
-        width: 130,
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.all(10),
+        width: 160,
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF5B2E9E), Color(0xFF7C3AED)],
+            colors: [Color(0xFF3D2A7A), Color(0xFF2A1A5E)],
           ),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withOpacity(0.12), width: 1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF7C3AED).withOpacity(0.2),
-              blurRadius: 14,
-              offset: const Offset(0, 4),
+              color: const Color(0xFF7C3AED).withOpacity(0.15),
+              blurRadius: 15,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Rank Badge
+            // Rank Badge dengan warna khusus
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(4),
+                color: rankColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: rankColor, width: 1.5),
               ),
               child: Text(
                 "#$rank",
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: rankColor,
                   fontWeight: FontWeight.bold,
-                  fontSize: 10,
+                  fontSize: 12,
                 ),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 12),
 
             // Avatar
             CircleAvatar(
-              radius: 20,
+              radius: 32,
               backgroundColor: Colors.white.withOpacity(0.15),
               backgroundImage:
                   streamer.foto != null && streamer.foto!.isNotEmpty
                   ? NetworkImage(streamer.foto!)
                   : null,
               child: streamer.foto == null || streamer.foto!.isEmpty
-                  ? const Icon(Icons.person, color: Colors.white, size: 20)
+                  ? const Icon(Icons.person, color: Colors.white, size: 32)
                   : null,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
 
             // Name
             Text(
@@ -609,10 +702,10 @@ class HomeScreen extends StatelessWidget {
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 14,
               ),
             ),
-            const SizedBox(height: 1),
+            const SizedBox(height: 4),
 
             // Game
             Text(
@@ -620,37 +713,63 @@ class HomeScreen extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
-                fontSize: 9,
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 11,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
 
-            // Stats Row
+            // Followers
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _statChip(
-                  Icons.favorite,
-                  "${streamer.followers}",
-                  Colors.pink,
-                  size: 8,
-                ),
+                const Icon(Icons.favorite, color: Colors.pink, size: 14),
                 const SizedBox(width: 4),
-                _statChip(
-                  Icons.monetization_on,
-                  _formatCurrency(streamer.totalDonasi),
-                  Colors.greenAccent,
-                  size: 8,
+                Text(
+                  "${streamer.followers} Followers",
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
+
+            // Donasi dengan format currency
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF8B5CF6), Color(0xFF6D5BFF)],
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.monetization_on,
+                    color: Colors.white,
+                    size: 14,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _formatCurrency(streamer.totalDonasi),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
 
             // Donate Button
             SizedBox(
               width: double.infinity,
-              height: 22,
+              height: 32,
               child: ElevatedButton(
                 onPressed: () {
                   Get.toNamed(Routes.streamerDetail, arguments: streamer);
@@ -659,13 +778,13 @@ class HomeScreen extends StatelessWidget {
                   backgroundColor: const Color(0xFF8B5CF6),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   padding: EdgeInsets.zero,
                 ),
                 child: const Text(
                   "Donate",
-                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -675,51 +794,41 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _statChip(
-    IconData icon,
-    String label,
-    Color color, {
-    double size = 8,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(3),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: size),
-          const SizedBox(width: 1),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: size - 1,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildActivities(ActivityController activityController) {
     return Obx(() {
       if (activityController.isLoading.value) {
         return const Center(
           child: Padding(
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.all(12),
             child: CircularProgressIndicator(),
           ),
         );
       }
 
       if (activityController.activities.isEmpty) {
-        return const SizedBox();
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E1B4B).withOpacity(0.5),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Center(
+            child: Column(
+              children: [
+                Icon(Icons.inbox_outlined, color: Colors.white38, size: 40),
+                SizedBox(height: 8),
+                Text(
+                  "Belum ada aktivitas",
+                  style: TextStyle(color: Colors.white54, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        );
       }
 
-      final items = activityController.activities.take(3).toList();
+      // Tampilkan 5 item (tidak dibatasi 3)
+      final items = activityController.activities.take(5).toList();
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -731,7 +840,7 @@ class HomeScreen extends StatelessWidget {
                 "⚡ Aktivitas Terbaru",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -749,98 +858,87 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(
                     color: Color(0xFF8B5CF6),
                     fontWeight: FontWeight.w600,
-                    fontSize: 11,
+                    fontSize: 12,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 12),
           ...List.generate(items.length, (index) {
             final activity = items[index];
             final isLast = index == items.length - 1;
 
-            return IntrinsicHeight(
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1C2147),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.05),
+                  width: 1,
+                ),
+              ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        margin: const EdgeInsets.only(top: 4),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF8B5CF6), Colors.blue],
-                          ),
-                          shape: BoxShape.circle,
-                        ),
+                  // Icon donasi dengan background
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF8B5CF6), Color(0xFF6D5BFF)],
                       ),
-                      if (!isLast)
-                        Expanded(
-                          child: Container(width: 1, color: Colors.white12),
-                        ),
-                    ],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.favorite,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 14),
+                  // Info donasi
                   Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 6),
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B).withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.03),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Donasi ke ${activity.streamerName}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Donasi ke ${activity.streamerName}",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                  vertical: 1,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(3),
-                                ),
-                                child: Text(
-                                  "+ Rp ${_formatCurrency(activity.nominal)}",
-                                  style: const TextStyle(
-                                    color: Colors.green,
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 1),
-                          Text(
-                            activity.pesan,
-                            style: const TextStyle(
-                              color: Colors.white60,
-                              fontSize: 9,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                        const SizedBox(height: 4),
+                        Text(
+                          activity.pesan.isNotEmpty
+                              ? activity.pesan
+                              : 'Tidak ada pesan',
+                          style: TextStyle(color: Colors.white60, fontSize: 13),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Nominal donasi
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      "+ Rp ${_formatCurrency(activity.nominal)}",
+                      style: const TextStyle(
+                        color: Colors.green,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

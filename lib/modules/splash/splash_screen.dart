@@ -77,36 +77,14 @@ class _SplashScreenState extends State<SplashScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: primaryColor.withOpacity(0.35),
-                            blurRadius: 120,
-                            spreadRadius: 25,
-                          ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        width: 320,
-                        fit: BoxFit.contain,
-                      ),
+                    // Logo tanpa constraint agar besar
+                    Image.asset(
+                      'assets/images/logo.png',
+                      width: 320,
+                      fit: BoxFit.contain,
                     ),
 
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      'KAistream',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 34,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 6),
 
                     const Text(
                       'Donasi Cepat dan Aman untuk Streamer Favoritmu',
@@ -118,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 50),
 
                     const SizedBox(
                       width: 35,

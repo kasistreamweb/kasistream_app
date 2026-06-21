@@ -5,6 +5,7 @@ import '../../app/theme/app_colors.dart';
 import '../../controllers/streamer_controller.dart';
 import '../../models/streamer_model.dart';
 import '../../app/routes/app_routes.dart';
+import '../../controllers/auth_controller.dart';
 
 class StreamerScreen extends StatelessWidget {
   const StreamerScreen({super.key});
@@ -33,7 +34,7 @@ class StreamerScreen extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // Purple glow top-left
+            // Orange-Gold glow top-left (Streamer vibe - warm/energetic)
             Positioned(
               top: -150,
               left: -120,
@@ -42,10 +43,10 @@ class StreamerScreen extends StatelessWidget {
                 height: 300,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFF8B5CF6),
+                  color: Color(0xFFF59E0B),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFF8B5CF6),
+                      color: Color(0xFFF59E0B),
                       blurRadius: 250,
                       spreadRadius: 80,
                     ),
@@ -54,7 +55,7 @@ class StreamerScreen extends StatelessWidget {
               ),
             ),
 
-            // Indigo glow bottom-right
+            // Deep Orange glow bottom-right
             Positioned(
               bottom: -180,
               right: -150,
@@ -63,10 +64,10 @@ class StreamerScreen extends StatelessWidget {
                 height: 350,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFF4F46E5),
+                  color: Color(0xFFEA580C),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFF4F46E5),
+                      color: Color(0xFFEA580C),
                       blurRadius: 280,
                       spreadRadius: 100,
                     ),
@@ -79,7 +80,7 @@ class StreamerScreen extends StatelessWidget {
             Obx(() {
               if (controller.isLoading.value && controller.streamers.isEmpty) {
                 return const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF8B5CF6)),
+                  child: CircularProgressIndicator(color: Color(0xFFF59E0B)),
                 );
               }
 
@@ -89,7 +90,7 @@ class StreamerScreen extends StatelessWidget {
               streamers.sort((a, b) => b.followers.compareTo(a.followers));
 
               return RefreshIndicator(
-                color: const Color(0xFF8B5CF6),
+                color: const Color(0xFFF59E0B),
                 onRefresh: controller.loadStreamers,
                 child: CustomScrollView(
                   slivers: [
@@ -100,7 +101,115 @@ class StreamerScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // ── Hero Banner ──────────────────────────────────────────
+                    // ── LOGIN/REGISTER BUTTONS ──
+                    SliverToBoxAdapter(
+                      child: Obx(() {
+                        final authController = Get.find<AuthController>();
+
+                        if (authController.isLoggedIn.value) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFF59E0B),
+                                        Color(0xFFEA580C),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xFFF59E0B,
+                                        ).withOpacity(0.4),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () => Get.toNamed('/login'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      elevation: 0,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFF59E0B),
+                                        Color(0xFFEA580C),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xFFF59E0B,
+                                        ).withOpacity(0.4),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () => Get.toNamed('/register'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      elevation: 0,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Register',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+
+                    // ── Hero Banner ──
                     SliverToBoxAdapter(
                       child: Container(
                         margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -109,36 +218,41 @@ class StreamerScreen extends StatelessWidget {
                           gradient: const LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [Color(0xFF8B5CF6), Color(0xFF4F46E5)],
+                            colors: [
+                              Color(0xFFF59E0B),
+                              Color(0xFFEA580C),
+                              Color(0xFFC2410C),
+                            ],
                           ),
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF8B5CF6).withOpacity(0.4),
-                              blurRadius: 30,
-                              offset: const Offset(0, 8),
+                              color: const Color(0xFFF59E0B).withOpacity(0.5),
+                              blurRadius: 35,
+                              spreadRadius: 3,
+                              offset: const Offset(0, 10),
                             ),
                           ],
                         ),
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.orange.withOpacity(0.3),
-                                    blurRadius: 20,
-                                    spreadRadius: 5,
+                                    color: Colors.orange.withOpacity(0.4),
+                                    blurRadius: 25,
+                                    spreadRadius: 8,
                                   ),
                                 ],
                               ),
                               child: const Icon(
                                 Icons.local_fire_department,
-                                color: Colors.orange,
-                                size: 30,
+                                color: Colors.white,
+                                size: 32,
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -152,30 +266,32 @@ class StreamerScreen extends StatelessWidget {
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black26,
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(height: 2),
+                                  SizedBox(height: 4),
                                   Text(
                                     "Dukung streamer favoritmu dengan donasi",
                                     style: TextStyle(
-                                      color: Colors.white70,
+                                      color: Colors.white,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black26,
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: Colors.white,
-                                size: 18,
                               ),
                             ),
                           ],
@@ -183,7 +299,7 @@ class StreamerScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // ── Search Box ───────────────────────────────────────────
+                    // ── Search Box ──
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -229,7 +345,7 @@ class StreamerScreen extends StatelessWidget {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: const BorderSide(
-                                color: Color(0xFF8B5CF6),
+                                color: Color(0xFFF59E0B),
                                 width: 1.5,
                               ),
                             ),
@@ -240,7 +356,7 @@ class StreamerScreen extends StatelessWidget {
 
                     const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-                    // ── Leaderboard Header ───────────────────────────────────
+                    // ── Leaderboard Header ──
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -267,10 +383,10 @@ class StreamerScreen extends StatelessWidget {
 
                     const SliverToBoxAdapter(child: SizedBox(height: 10)),
 
-                    // ── Leaderboard Horizontal List ──────────────────────────
+                    // ── Leaderboard Horizontal List ──
                     SliverToBoxAdapter(
                       child: SizedBox(
-                        height: 260, // Diperbesar dari 200
+                        height: 260,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -287,7 +403,7 @@ class StreamerScreen extends StatelessWidget {
 
                     const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-                    // ── All Streamers List ───────────────────────────────────
+                    // ── All Streamers List ──
                     if (streamers.isEmpty)
                       SliverFillRemaining(
                         child: Center(
@@ -334,8 +450,7 @@ class StreamerScreen extends StatelessWidget {
   }
 }
 
-// ── Streamer Card ────────────────────────────────────────────────────────────
-
+// ── Streamer Card ──
 class _StreamerCard extends StatelessWidget {
   final StreamerModel streamer;
 
@@ -360,12 +475,12 @@ class _StreamerCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: const Color(0xFF8B5CF6).withOpacity(0.35),
+          color: const Color(0xFFF59E0B).withOpacity(0.35),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF8B5CF6).withOpacity(0.2),
+            color: const Color(0xFFF59E0B).withOpacity(0.2),
             blurRadius: 20,
             offset: const Offset(0, 6),
           ),
@@ -380,7 +495,7 @@ class _StreamerCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 26,
-                  backgroundColor: const Color(0xFF8B5CF6),
+                  backgroundColor: const Color(0xFFF59E0B),
                   backgroundImage:
                       streamer.foto != null && streamer.foto!.isNotEmpty
                       ? NetworkImage(streamer.foto!)
@@ -410,7 +525,7 @@ class _StreamerCard extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF8B5CF6), Color(0xFF6D5BFF)],
+                            colors: [Color(0xFFF59E0B), Color(0xFFEA580C)],
                           ),
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -432,17 +547,17 @@ class _StreamerCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF8B5CF6).withOpacity(0.25),
+                    color: const Color(0xFFF59E0B).withOpacity(0.25),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: const Color(0xFF8B5CF6).withOpacity(0.4),
+                      color: const Color(0xFFF59E0B).withOpacity(0.4),
                       width: 1,
                     ),
                   ),
                   child: Text(
                     "${streamer.followers} followers",
                     style: const TextStyle(
-                      color: Color(0xFFC8B5FF),
+                      color: Color(0xFFF59E0B),
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
@@ -498,7 +613,7 @@ class _StreamerCard extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF6D5BFF)],
+                        colors: [Color(0xFFF59E0B), Color(0xFFEA580C)],
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -531,8 +646,7 @@ class _StreamerCard extends StatelessWidget {
   }
 }
 
-// ── Stat Item ────────────────────────────────────────────────────────────────
-
+// ── Stat Item ──
 class _StatItem extends StatelessWidget {
   final String title;
   final String value;
@@ -556,7 +670,7 @@ class _StatItem extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: const Color(0xFF8B5CF6), size: 18),
+          Icon(icon, color: const Color(0xFFF59E0B), size: 18),
           const SizedBox(height: 4),
           Text(
             value,
@@ -578,8 +692,7 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-// ── Leaderboard Card ─────────────────────────────────────────────────────────
-
+// ── Leaderboard Card ──
 class _LeaderboardCard extends StatelessWidget {
   final StreamerModel streamer;
   final int rank;
@@ -593,11 +706,11 @@ class _LeaderboardCard extends StatelessWidget {
       case 1:
         return const Color(0xFFFFD700);
       case 2:
-        return const Color(0xFFB0BEC5);
+        return const Color(0xFFC0C0C0);
       case 3:
-        return const Color(0xFFFF8C42);
+        return const Color(0xFFCD7F32);
       default:
-        return const Color(0xFF8B5CF6);
+        return const Color(0xFFF59E0B);
     }
   }
 
@@ -607,36 +720,36 @@ class _LeaderboardCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       onTap: () => Get.toNamed(Routes.streamerDetail, arguments: streamer),
       child: Container(
-        width: 150, // Diperbesar dari 130
+        width: 150,
         margin: const EdgeInsets.only(right: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF5B2E9E), Color(0xFF7C3AED)],
+            colors: [Color(0xFF4C1D95), Color(0xFFF59E0B)],
           ),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withOpacity(0.15), width: 1.5),
+          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF7C3AED).withOpacity(0.3),
+              color: const Color(0xFFF59E0B).withOpacity(0.4),
               blurRadius: 20,
-              offset: const Offset(0, 6),
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Rank badge - diperbesar
+            // Rank badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: rankColor.withOpacity(0.25),
+                color: rankColor.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: rankColor.withOpacity(0.6),
+                  color: rankColor.withOpacity(0.8),
                   width: 1.5,
                 ),
               ),
@@ -651,11 +764,11 @@ class _LeaderboardCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Avatar - diperbesar
+            // Avatar
             Center(
               child: CircleAvatar(
-                radius: 30, // Diperbesar dari 24
-                backgroundColor: Colors.white.withOpacity(0.2),
+                radius: 30,
+                backgroundColor: Colors.white.withOpacity(0.25),
                 backgroundImage:
                     streamer.foto != null && streamer.foto!.isNotEmpty
                     ? NetworkImage(streamer.foto!)
@@ -667,7 +780,7 @@ class _LeaderboardCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // Name - diperbesar
+            // Name
             Text(
               streamer.name,
               maxLines: 1,
@@ -681,28 +794,28 @@ class _LeaderboardCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
 
-            // Game - TAMBAHKAN
+            // Game
             Text(
               streamer.game ?? 'Streamer',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withOpacity(0.7),
                 fontSize: 11,
               ),
             ),
             const SizedBox(height: 8),
 
-            // Followers - diperbesar
+            // Followers
             Text(
               "${streamer.followers} Followers",
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 12, // Diperbesar dari 10
-                color: Colors.white.withOpacity(0.8),
+                fontSize: 12,
+                color: Colors.white.withOpacity(0.85),
               ),
             ),
 
@@ -717,12 +830,13 @@ class _LeaderboardCard extends StatelessWidget {
                   Get.toNamed(Routes.streamerDetail, arguments: streamer);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8B5CF6),
-                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFFF59E0B),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   padding: EdgeInsets.zero,
+                  elevation: 0,
                 ),
                 child: const Text(
                   "Donate",
