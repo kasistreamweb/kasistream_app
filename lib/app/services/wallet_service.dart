@@ -51,4 +51,18 @@ class WalletService {
 
     return data['data'] ?? [];
   }
+
+  // ── METHOD BARU: GET DONATION HISTORY ──
+  Future<List<dynamic>> getDonationHistory() async {
+    final token = await StorageService.getToken();
+
+    final response = await http.get(
+      Uri.parse('${ApiService.baseUrl}/donation-history'),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+
+    final data = jsonDecode(response.body);
+
+    return data['data'] ?? [];
+  }
 }

@@ -300,7 +300,9 @@ class UserWalletScreen extends StatelessWidget {
                             const SizedBox(height: 12),
 
                             Obx(() {
-                              if (controller.history.isEmpty) {
+                              final history = controller.history;
+
+                              if (history.isEmpty) {
                                 return Container(
                                   padding: const EdgeInsets.all(30),
                                   decoration: BoxDecoration(
@@ -342,28 +344,62 @@ class UserWalletScreen extends StatelessWidget {
                               }
 
                               return Column(
-                                children: controller.history.map((item) {
-                                  final status =
-                                      item['status']
-                                          ?.toString()
-                                          .toLowerCase() ??
-                                      '';
-                                  final isSuccess = status == 'success';
-                                  final isPending = status == 'pending';
-                                  final nominal =
+                                children: history.map((item) {
+                                  // ── PERUBAHAN: Ambil nama streamer dari berbagai kemungkinan ──
+                                  final String streamerName =
+                                      item['streamer_name'] ??
+                                      item['streamer']?['name'] ??
+                                      item['user']?['name'] ??
+                                      '-';
+
+                                  final String description =
+                                      'Donasi ke $streamerName';
+
+                                  final int amount =
                                       int.tryParse(
                                         item['nominal'].toString(),
                                       ) ??
                                       0;
 
+                                  final String status =
+                                      item['status']?.toString() ?? 'success';
+
+                                  // ── PERUBAHAN: Format tanggal ──
+                                  String date = '';
+                                  try {
+                                    final createdAt = DateTime.parse(
+                                      item['created_at'],
+                                    );
+                                    date =
+                                        '${createdAt.day.toString().padLeft(2, '0')}/'
+                                        '${createdAt.month.toString().padLeft(2, '0')}/'
+                                        '${createdAt.year} '
+                                        '${createdAt.hour.toString().padLeft(2, '0')}:'
+                                        '${createdAt.minute.toString().padLeft(2, '0')}';
+                                  } catch (_) {
+                                    date = '-';
+                                  }
+
+                                  // Tentukan status color
+                                  final bool isSuccess =
+                                      status.toLowerCase() == 'success' ||
+                                      status.toLowerCase() == 'approved' ||
+                                      status.toLowerCase() == 'berhasil';
+                                  final bool isPending =
+                                      status.toLowerCase() == 'pending' ||
+                                      status.toLowerCase() == 'menunggu';
+
                                   Color statusColor;
                                   if (isSuccess) {
-                                    statusColor = Colors.green;
+                                    statusColor = const Color(0xFF22C55E);
                                   } else if (isPending) {
                                     statusColor = Colors.orange;
                                   } else {
                                     statusColor = Colors.red;
                                   }
+
+                                  // Icon selalu favorite untuk donasi
+                                  IconData iconData = Icons.favorite;
 
                                   return Container(
                                     margin: const EdgeInsets.only(bottom: 10),
@@ -389,9 +425,7 @@ class UserWalletScreen extends StatelessWidget {
                                             shape: BoxShape.circle,
                                           ),
                                           child: Icon(
-                                            isSuccess
-                                                ? Icons.check_circle
-                                                : Icons.schedule,
+                                            iconData,
                                             color: statusColor,
                                             size: 20,
                                           ),
@@ -403,8 +437,7 @@ class UserWalletScreen extends StatelessWidget {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                item['keterangan'] ??
-                                                    'Transaksi',
+                                                description,
                                                 style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 14,
@@ -413,10 +446,7 @@ class UserWalletScreen extends StatelessWidget {
                                               ),
                                               const SizedBox(height: 2),
                                               Text(
-                                                item['created_at']
-                                                        ?.toString()
-                                                        .substring(0, 10) ??
-                                                    '-',
+                                                date,
                                                 style: TextStyle(
                                                   color: Colors.grey[400],
                                                   fontSize: 11,
@@ -430,32 +460,34 @@ class UserWalletScreen extends StatelessWidget {
                                               CrossAxisAlignment.end,
                                           children: [
                                             Text(
-                                              'Rp ${formatCurrency(nominal)}',
+                                              '- Rp ${formatCurrency(amount)}',
                                               style: TextStyle(
-                                                color: statusColor,
+                                                // ── PERUBAHAN: Warna nominal ──
+                                                color: const Color(0xFF22C55E),
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                               ),
                                             ),
                                             const SizedBox(height: 4),
+                                            // ── PERUBAHAN: Status badge yang lebih baik ──
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 2,
+                                                    horizontal: 10,
+                                                    vertical: 4,
                                                   ),
                                               decoration: BoxDecoration(
-                                                color: statusColor.withOpacity(
-                                                  0.15,
-                                                ),
+                                                color: const Color(
+                                                  0xFF22C55E,
+                                                ).withOpacity(0.15),
                                                 borderRadius:
-                                                    BorderRadius.circular(12),
+                                                    BorderRadius.circular(20),
                                               ),
                                               child: Text(
                                                 status.toUpperCase(),
-                                                style: TextStyle(
-                                                  color: statusColor,
-                                                  fontSize: 9,
+                                                style: const TextStyle(
+                                                  color: Color(0xFF22C55E),
+                                                  fontSize: 11,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),

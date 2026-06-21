@@ -314,6 +314,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                       if (isGuest) {
                         Get.offAllNamed(Routes.streamer);
                       } else {
+                        // ── PERUBAHAN: Redirect ke MainScreen (dengan navbar) ──
                         Get.offAllNamed('/main');
                       }
                     },
@@ -368,11 +369,13 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   height: 58,
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      Get.toNamed('/history');
+                      // ── PERUBAHAN: Redirect ke MainScreen (dengan navbar) ──
+                      // Dan langsung pindah ke tab Wallet (index 3 atau 4)
+                      Get.offAllNamed('/main');
                     },
-                    icon: const Icon(Icons.history, color: Colors.white),
+                    icon: const Icon(Icons.wallet, color: Colors.white),
                     label: const Text(
-                      "Lihat Riwayat Donasi",
+                      "Lihat Wallet",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
