@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../app/routes/app_routes.dart';
 import '../../app/services/donation_service.dart';
 import '../../controllers/auth_controller.dart';
 
@@ -28,9 +29,14 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
       final int donasiId =
           int.tryParse(Get.arguments['donasi_id'].toString()) ?? 0;
 
-      final result = await DonationService().getPaymentDetail(donasiId);
+      final bool isGuest = Get.arguments['is_guest'] == true;
+
+      final result = isGuest
+          ? await DonationService().guestPaymentDetail(donasiId)
+          : await DonationService().getPaymentDetail(donasiId);
 
       print('=== PAYMENT SUCCESS - LOAD PAYMENT ===');
+      print('isGuest: $isGuest');
       print('Result: $result');
 
       if (result['success'] == true) {
@@ -126,6 +132,9 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
     final String paymentTime = payment!['created_at'].toString();
 
     final bool isWallet = paymentMethod.toLowerCase().contains('wallet');
+
+    // ── TAMBAHKAN INI ──
+    final bool isGuest = Get.arguments['is_guest'] == true;
 
     return Scaffold(
       backgroundColor: const Color(0xFF070B24),
@@ -302,7 +311,11 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   ),
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Get.offAllNamed('/main');
+                      if (isGuest) {
+                        Get.offAllNamed(Routes.streamer);
+                      } else {
+                        Get.offAllNamed('/main');
+                      }
                     },
                     icon: const Icon(Icons.card_giftcard, color: Colors.white),
                     label: const Text(
@@ -323,31 +336,57 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
 
               const SizedBox(height: 14),
 
-              // ── TOMBOL RIWAYAT ──
-              SizedBox(
-                width: double.infinity,
-                height: 58,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Get.toNamed('/history');
-                  },
-                  icon: const Icon(Icons.history, color: Colors.white),
-                  label: const Text(
-                    "Lihat Riwayat Donasi",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+              // ── TOMBOL RIWAYAT / DAFTAR ──
+              if (isGuest)
+                SizedBox(
+                  width: double.infinity,
+                  height: 58,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Get.offAllNamed(Routes.register);
+                    },
+                    icon: const Icon(Icons.person_add, color: Colors.white),
+                    label: const Text(
+                      "Daftar Sekarang",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.white.withOpacity(0.15)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                   ),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.white.withOpacity(0.15)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                )
+              else
+                SizedBox(
+                  width: double.infinity,
+                  height: 58,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Get.toNamed('/history');
+                    },
+                    icon: const Icon(Icons.history, color: Colors.white),
+                    label: const Text(
+                      "Lihat Riwayat Donasi",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.white.withOpacity(0.15)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
               const SizedBox(height: 20),
             ],

@@ -78,14 +78,9 @@ class AppPages {
     GetPage(
       name: Routes.streamerDetail,
       page: () => const StreamerDetailScreen(),
-      middlewares: [AuthMiddleware()],
     ),
 
-    GetPage(
-      name: Routes.donate,
-      page: () => const DonateScreen(),
-      middlewares: [AuthMiddleware()],
-    ),
+    GetPage(name: Routes.donate, page: () => const DonateScreen()),
 
     GetPage(
       name: Routes.editProfile,
@@ -110,6 +105,8 @@ class AppPages {
       page: () => const StreamerScreen(),
       middlewares: [AuthMiddleware()],
     ),
+
+    GetPage(name: Routes.guestStreamer, page: () => const StreamerScreen()),
 
     GetPage(
       name: Routes.history,

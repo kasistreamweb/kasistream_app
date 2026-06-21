@@ -435,7 +435,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     hoverColor: const Color(0xFF6058F0),
                                     borderColor: const Color(0xFF7C3AED),
                                     builder: (color) => OutlinedButton.icon(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Get.offAllNamed(Routes.guestStreamer);
+                                      },
                                       icon: const Icon(
                                         Icons.payments_outlined,
                                         color: Colors.white,

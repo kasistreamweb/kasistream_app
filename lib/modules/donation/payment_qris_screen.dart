@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import '../../app/routes/app_routes.dart';
 import '../../app/services/donation_service.dart';
 import '../../controllers/auth_controller.dart';
-import '../../controllers/dashboard_controller.dart'; // TAMBAHKAN IMPORT
+import '../../controllers/dashboard_controller.dart';
 
 class PaymentQrisScreen extends StatefulWidget {
   const PaymentQrisScreen({super.key});
@@ -44,9 +44,14 @@ class _PaymentQrisScreenState extends State<PaymentQrisScreen> {
       final int donasiId =
           int.tryParse(Get.arguments['donasi_id'].toString()) ?? 0;
 
-      final result = await DonationService().getPaymentDetail(donasiId);
+      final bool isGuest = Get.arguments['is_guest'] == true;
+
+      final result = isGuest
+          ? await DonationService().guestPaymentDetail(donasiId)
+          : await DonationService().getPaymentDetail(donasiId);
 
       print('=== LOAD PAYMENT DETAIL ===');
+      print('isGuest: $isGuest');
       print('Result: $result');
 
       if (result['success'] == true) {
@@ -99,22 +104,27 @@ class _PaymentQrisScreenState extends State<PaymentQrisScreen> {
       final int donasiId =
           int.tryParse(Get.arguments['donasi_id'].toString()) ?? 0;
 
-      final result = await DonationService().checkPayment(donasiId);
+      final bool isGuest = Get.arguments['is_guest'] == true;
+
+      final result = isGuest
+          ? await DonationService().guestCheckPayment(donasiId)
+          : await DonationService().checkPayment(donasiId);
 
       print('=== CHECK PAYMENT RESULT ===');
+      print('isGuest: $isGuest');
       print('Result: $result');
 
       if (result['status'] == 'success') {
         timer?.cancel();
 
-        await Get.find<AuthController>().refreshUser();
-
-        // ── TAMBAHKAN INI ──
-        await Get.find<DashboardController>().loadDashboard();
+        if (!isGuest) {
+          await Get.find<AuthController>().refreshUser();
+          await Get.find<DashboardController>().loadDashboard();
+        }
 
         Get.offAllNamed(
           Routes.paymentSuccess,
-          arguments: {'donasi_id': donasiId},
+          arguments: {'donasi_id': donasiId, 'is_guest': isGuest},
         );
       }
     } catch (e) {
@@ -342,91 +352,6 @@ class _PaymentQrisScreenState extends State<PaymentQrisScreen> {
 
                   const SizedBox(height: 24),
 
-                  // ── TOMBOL CEK PEMBAYARAN ──
-                  Container(
-                    width: double.infinity,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF6D5BFF)],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF8B5CF6).withOpacity(0.3),
-                          blurRadius: 20,
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          final int donasiId =
-                              int.tryParse(
-                                Get.arguments['donasi_id'].toString(),
-                              ) ??
-                              0;
-
-                          final result = await DonationService().checkPayment(
-                            donasiId,
-                          );
-
-                          print('=== CEK PEMBAYARAN MANUAL ===');
-                          print('Result: $result');
-
-                          if (result['status'] == 'success') {
-                            timer?.cancel();
-
-                            await Get.find<AuthController>().refreshUser();
-
-                            // ── TAMBAHKAN INI ──
-                            await Get.find<DashboardController>()
-                                .loadDashboard();
-
-                            Get.offAllNamed(
-                              Routes.paymentSuccess,
-                              arguments: {'donasi_id': donasiId},
-                            );
-                          } else {
-                            Get.snackbar(
-                              'Pending',
-                              'Pembayaran belum diterima',
-                              backgroundColor: Colors.orange,
-                              colorText: Colors.white,
-                              snackPosition: SnackPosition.BOTTOM,
-                            );
-                          }
-                        } catch (e) {
-                          Get.snackbar(
-                            'Error',
-                            'Gagal mengecek pembayaran: $e',
-                            backgroundColor: Colors.red,
-                            colorText: Colors.white,
-                            snackPosition: SnackPosition.BOTTOM,
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: const Text(
-                        'Cek Pembayaran',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
                   // ── TOMBOL BAYAR DENGAN ONOPAY ──
                   Container(
                     width: double.infinity,
@@ -452,25 +377,32 @@ class _PaymentQrisScreenState extends State<PaymentQrisScreen> {
                               ) ??
                               0;
 
-                          final result = await DonationService().payOnopay(
-                            donasiId,
-                          );
+                          final bool isGuest =
+                              Get.arguments['is_guest'] == true;
+
+                          final result = isGuest
+                              ? await DonationService().guestPayOnopay(donasiId)
+                              : await DonationService().payOnopay(donasiId);
 
                           print('=== PAY ONOPAY RESULT ===');
+                          print('isGuest: $isGuest');
                           print('Result: $result');
 
                           if (result['success'] == true) {
                             timer?.cancel();
 
-                            await Get.find<AuthController>().refreshUser();
-
-                            // ── TAMBAHKAN INI ──
-                            await Get.find<DashboardController>()
-                                .loadDashboard();
+                            if (!isGuest) {
+                              await Get.find<AuthController>().refreshUser();
+                              await Get.find<DashboardController>()
+                                  .loadDashboard();
+                            }
 
                             Get.offAllNamed(
                               Routes.paymentSuccess,
-                              arguments: {'donasi_id': donasiId},
+                              arguments: {
+                                'donasi_id': donasiId,
+                                'is_guest': isGuest,
+                              },
                             );
                           } else {
                             Get.snackbar(

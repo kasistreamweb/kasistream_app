@@ -12,6 +12,7 @@ import 'controllers/wallet_controller.dart';
 import 'controllers/main_controller.dart';
 import 'controllers/dashboard_controller.dart';
 import 'controllers/activity_controller.dart';
+import 'controllers/streamer_dashboard_controller.dart';
 
 void main() {
   Get.put(AuthController());
@@ -25,6 +26,8 @@ void main() {
   Get.put(ProfileController());
 
   Get.put(StreamerController());
+
+  Get.put(StreamerDashboardController());
 
   Get.put(DonationController());
 

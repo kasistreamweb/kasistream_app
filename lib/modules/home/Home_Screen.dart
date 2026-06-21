@@ -8,6 +8,48 @@ import '../../controllers/streamer_controller.dart';
 import '../../models/streamer_model.dart';
 import '../../app/routes/app_routes.dart';
 
+// ── STICKY HEADER DELEGATE ──
+class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _StickyHeaderDelegate({required this.child});
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(45),
+        bottomRight: Radius.circular(45),
+      ),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF090B1F), Color(0xFF11132D), Color(0xFF1B1E47)],
+          ),
+        ),
+        child: child,
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => 310;
+
+  @override
+  double get minExtent => 310;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
+  }
+}
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -26,186 +68,330 @@ class HomeScreen extends StatelessWidget {
     final activityController = Get.find<ActivityController>();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 0,
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0F172A), Color(0xFF1E1B4B), Color(0xFF312E81)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF171533), Color(0xFF24205A), Color(0xFF322C7A)],
           ),
         ),
-        child: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              await Get.find<AuthController>().refreshUser();
-
-              await Future.wait([
-                streamerController.loadStreamers(),
-                dashboardController.loadDashboard(),
-                activityController.loadActivities(),
-              ]);
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(auth, dashboardController),
-                  const SizedBox(height: 12),
-                  _buildDashboardStats(dashboardController),
-                  const SizedBox(height: 16),
-                  _buildTopStreamers(streamerController),
-                  const SizedBox(height: 16),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.35,
-                    ),
-                    child: _buildActivities(activityController),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(
-    AuthController auth,
-    DashboardController dashboardController,
-  ) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF8B5CF6), Color(0xFF4F46E5)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.purple.withOpacity(0.3),
-            blurRadius: 30,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.wallet_rounded,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Text(
-                  "Premium",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600,
+        child: Stack(
+          children: [
+            // ── GLOW DI BELAKANG CARD ──
+            Positioned(
+              top: 40,
+              left: 20,
+              right: 20,
+              child: IgnorePointer(
+                child: Container(
+                  height: 180,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF8B5CF6).withOpacity(0.35),
+                        blurRadius: 80,
+                        spreadRadius: 20,
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            "👋 Selamat Datang",
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            auth.user.value?.name ?? 'User',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Divider(color: Colors.white24, thickness: 1),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Total Saldo",
-                      style: TextStyle(color: Colors.white70, fontSize: 10),
+
+            // Purple glow top-left
+            Positioned(
+              top: -150,
+              left: -120,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF8B5CF6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF8B5CF6),
+                      blurRadius: 250,
+                      spreadRadius: 80,
                     ),
-                    const SizedBox(height: 2),
-                    // ── GANTI INI ──
-                    Obx(
-                      () => Text(
-                        "Rp ${_formatCurrency(dashboardController.balance.value)}",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                  ],
+                ),
+              ),
+            ),
+
+            // Indigo glow bottom-right
+            Positioned(
+              bottom: -180,
+              right: -150,
+              child: Container(
+                width: 350,
+                height: 350,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF4F46E5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF4F46E5),
+                      blurRadius: 280,
+                      spreadRadius: 100,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── MAIN CONTENT ──
+            SafeArea(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await Get.find<AuthController>().refreshUser();
+
+                  await Future.wait([
+                    streamerController.loadStreamers(),
+                    dashboardController.loadDashboard(),
+                    activityController.loadActivities(),
+                  ]);
+                },
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    // ── HEADER + CARD SALDO (STICKY) ──
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _StickyHeaderDelegate(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // ── LOGO + PREMIUM (LOGO DIPERBESAR) ──
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/logo1.png',
+                                    height: 100, // DIPERBESAR dari 70 ke 100
+                                    fit: BoxFit.contain,
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.12),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: const Text(
+                                      'Premium',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+
+                              // ── CARD SALDO ──
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.fromLTRB(
+                                  20,
+                                  16,
+                                  20,
+                                  30,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Color(0xFF9A6BFF),
+                                      Color(0xFF8368FF),
+                                      Color(0xFF6D5BFF),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(28),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFF8B5CF6,
+                                      ).withOpacity(0.45),
+                                      blurRadius: 40,
+                                      spreadRadius: 2,
+                                      offset: const Offset(0, 12),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(
+                                              0.15,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.account_balance_wallet,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Get.toNamed(Routes.wallet);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(
+                                                0.1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: const Row(
+                                              children: [
+                                                Text(
+                                                  'Tap untuk lihat',
+                                                  style: TextStyle(
+                                                    color: Colors.white70,
+                                                    fontSize: 10,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 4),
+                                                Icon(
+                                                  Icons.arrow_forward,
+                                                  color: Colors.white70,
+                                                  size: 12,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    const Text(
+                                      'Total Saldo',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Obx(
+                                      () => Text(
+                                        'Rp ${_formatCurrency(dashboardController.balance.value)}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.15),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Text(
+                                        auth.user.value?.name ?? 'User',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // ── KONTEN SCROLL ──
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ── STATS ──
+                            const SizedBox(height: 20),
+                            _buildDashboardStats(dashboardController),
+                            const SizedBox(height: 16),
+
+                            // ── TOP STREAMERS ──
+                            _buildTopStreamers(streamerController),
+                            const SizedBox(height: 16),
+
+                            // ── AKTIVITAS ──
+                            _buildActivities(activityController),
+                            const SizedBox(height: 80),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.arrow_forward_rounded,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildDashboardStats(DashboardController dashboard) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1B4B).withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1C1848), Color(0xFF1A1640)],
+        ),
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 25,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -253,14 +439,14 @@ class HomeScreen extends StatelessWidget {
   Widget _statItem(IconData icon, String value, String label, Color color) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 16),
-        const SizedBox(height: 2),
+        Icon(icon, color: color, size: 18),
+        const SizedBox(height: 4),
         Text(
           value,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: 11,
+            fontSize: 12,
           ),
           textAlign: TextAlign.center,
         ),
@@ -280,7 +466,7 @@ class HomeScreen extends StatelessWidget {
               "🔥 Top Streamer",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -304,12 +490,12 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         Obx(() {
           if (streamerController.isLoading.value) {
             return const Center(
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(12),
                 child: CircularProgressIndicator(),
               ),
             );
@@ -317,10 +503,10 @@ class HomeScreen extends StatelessWidget {
 
           if (streamerController.streamers.isEmpty) {
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xFF1E1B4B).withOpacity(0.5),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: const Center(
                 child: Column(
@@ -328,9 +514,9 @@ class HomeScreen extends StatelessWidget {
                     Icon(
                       Icons.person_off_rounded,
                       color: Colors.white54,
-                      size: 32,
+                      size: 28,
                     ),
-                    SizedBox(height: 6),
+                    SizedBox(height: 4),
                     Text(
                       "Belum ada streamer",
                       style: TextStyle(color: Colors.white70, fontSize: 12),
@@ -342,7 +528,7 @@ class HomeScreen extends StatelessWidget {
           }
 
           return SizedBox(
-            height: 180,
+            height: 220,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: streamerController.streamers.length,
@@ -361,21 +547,21 @@ class HomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.streamerDetail, arguments: streamer),
       child: Container(
-        width: 120,
-        margin: const EdgeInsets.only(right: 10),
+        width: 130,
+        margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF4C1D95), Color(0xFF7C3AED)],
+            colors: [Color(0xFF5B2E9E), Color(0xFF7C3AED)],
           ),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withOpacity(0.12), width: 1),
           boxShadow: [
             BoxShadow(
               color: const Color(0xFF7C3AED).withOpacity(0.2),
-              blurRadius: 16,
+              blurRadius: 14,
               offset: const Offset(0, 4),
             ),
           ],
@@ -387,15 +573,15 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(6),
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
                 "#$rank",
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 8,
+                  fontSize: 10,
                 ),
               ),
             ),
@@ -403,14 +589,14 @@ class HomeScreen extends StatelessWidget {
 
             // Avatar
             CircleAvatar(
-              radius: 24,
-              backgroundColor: Colors.white.withOpacity(0.2),
+              radius: 20,
+              backgroundColor: Colors.white.withOpacity(0.15),
               backgroundImage:
                   streamer.foto != null && streamer.foto!.isNotEmpty
                   ? NetworkImage(streamer.foto!)
                   : null,
               child: streamer.foto == null || streamer.foto!.isEmpty
-                  ? const Icon(Icons.person, color: Colors.white, size: 24)
+                  ? const Icon(Icons.person, color: Colors.white, size: 20)
                   : null,
             ),
             const SizedBox(height: 6),
@@ -423,7 +609,7 @@ class HomeScreen extends StatelessWidget {
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 11,
+                fontSize: 12,
               ),
             ),
             const SizedBox(height: 1),
@@ -434,22 +620,28 @@ class HomeScreen extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withOpacity(0.4),
                 fontSize: 9,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
             // Stats Row
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _statChip(Icons.favorite, "${streamer.followers}", Colors.pink),
+                _statChip(
+                  Icons.favorite,
+                  "${streamer.followers}",
+                  Colors.pink,
+                  size: 8,
+                ),
                 const SizedBox(width: 4),
                 _statChip(
                   Icons.monetization_on,
                   _formatCurrency(streamer.totalDonasi),
                   Colors.greenAccent,
+                  size: 8,
                 ),
               ],
             ),
@@ -458,18 +650,17 @@ class HomeScreen extends StatelessWidget {
             // Donate Button
             SizedBox(
               width: double.infinity,
-              height: 24,
+              height: 22,
               child: ElevatedButton(
                 onPressed: () {
                   Get.toNamed(Routes.streamerDetail, arguments: streamer);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: const Color(0xFF7C3AED),
+                  backgroundColor: const Color(0xFF8B5CF6),
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  elevation: 0,
                   padding: EdgeInsets.zero,
                 ),
                 child: const Text(
@@ -484,22 +675,27 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _statChip(IconData icon, String label, Color color) {
+  Widget _statChip(
+    IconData icon,
+    String label,
+    Color color, {
+    double size = 8,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(5),
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(3),
       ),
       child: Row(
         children: [
-          Icon(icon, color: color, size: 8),
-          const SizedBox(width: 2),
+          Icon(icon, color: color, size: size),
+          const SizedBox(width: 1),
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 8,
+              color: Colors.white.withOpacity(0.8),
+              fontSize: size - 1,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -513,7 +709,7 @@ class HomeScreen extends StatelessWidget {
       if (activityController.isLoading.value) {
         return const Center(
           child: Padding(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(8),
             child: CircularProgressIndicator(),
           ),
         );
@@ -523,7 +719,6 @@ class HomeScreen extends StatelessWidget {
         return const SizedBox();
       }
 
-      // Batasi hanya 3 item terbaru agar tidak overflow
       final items = activityController.activities.take(3).toList();
 
       return Column(
@@ -536,7 +731,7 @@ class HomeScreen extends StatelessWidget {
                 "⚡ Aktivitas Terbaru",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -560,7 +755,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           ...List.generate(items.length, (index) {
             final activity = items[index];
             final isLast = index == items.length - 1;
@@ -572,8 +767,8 @@ class HomeScreen extends StatelessWidget {
                   Column(
                     children: [
                       Container(
-                        width: 7,
-                        height: 7,
+                        width: 6,
+                        height: 6,
                         margin: const EdgeInsets.only(top: 4),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -584,18 +779,18 @@ class HomeScreen extends StatelessWidget {
                       ),
                       if (!isLast)
                         Expanded(
-                          child: Container(width: 1.5, color: Colors.white12),
+                          child: Container(width: 1, color: Colors.white12),
                         ),
                     ],
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B).withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xFF1E293B).withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: Colors.white.withOpacity(0.03),
                         ),
@@ -610,37 +805,37 @@ class HomeScreen extends StatelessWidget {
                                   "Donasi ke ${activity.streamerName}",
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 10,
                                   ),
                                 ),
                               ),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
+                                  horizontal: 4,
+                                  vertical: 1,
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.green.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(3),
                                 ),
                                 child: Text(
                                   "+ Rp ${_formatCurrency(activity.nominal)}",
                                   style: const TextStyle(
                                     color: Colors.green,
-                                    fontSize: 9,
+                                    fontSize: 8,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 1),
                           Text(
                             activity.pesan,
                             style: const TextStyle(
                               color: Colors.white60,
-                              fontSize: 10,
+                              fontSize: 9,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

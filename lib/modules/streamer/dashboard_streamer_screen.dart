@@ -7,6 +7,7 @@ import '../../controllers/streamer_controller.dart';
 import '../../models/streamer_model.dart';
 import '../../app/routes/app_routes.dart';
 import '../../app/theme/app_colors.dart';
+import '../../controllers/streamer_dashboard_controller.dart';
 
 class DashboardStreamerScreen extends StatelessWidget {
   const DashboardStreamerScreen({super.key});
@@ -177,157 +178,171 @@ class DashboardStreamerScreen extends StatelessWidget {
 class _DashboardTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<StreamerController>();
-    final totalDonasi = controller.streamers.fold<int>(
-      0,
-      (sum, s) => sum + s.totalDonasi,
-    );
-    final totalDonatur = controller.streamers.length;
+    final controller = Get.find<StreamerDashboardController>();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        children: [
-          // Stats Row
-          Row(
-            children: [
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.monetization_on,
-                  title: "Total Donasi",
-                  value: "Rp ${formatCurrency(totalDonasi)}",
-                  color: Colors.green,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.people,
-                  title: "Total Donatur",
-                  value: totalDonatur.toString(),
-                  color: const Color(0xFF8B5CF6),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.receipt_long,
-                  title: "Total Transaksi",
-                  value: "1",
-                  color: Colors.orange,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.trending_up,
-                  title: "Rata-rata",
-                  value: "Rp ${formatCurrency(totalDonasi)}",
-                  color: Colors.blue,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
-          // Riwayat Donasi Terbaru
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF2D1B69), Color(0xFF1A1A4E)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.05)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Obx(
+      () => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          children: [
+            // Stats Row
+            Row(
               children: [
-                const Text(
-                  "📋 Riwayat Donasi Terbaru",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                Expanded(
+                  child: _StatCard(
+                    icon: Icons.monetization_on,
+                    title: "Total Donasi",
+                    value: "Rp ${formatCurrency(controller.totalDonasi.value)}",
+                    color: Colors.green,
                   ),
                 ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1C2147),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: const Color(0xFF8B5CF6),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Del",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              "Hebat",
-                              style: TextStyle(
-                                color: Colors.white60,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "Rp 100.000",
-                            style: const TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            "15 Jun 2026",
-                            style: TextStyle(
-                              color: Colors.white60,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _StatCard(
+                    icon: Icons.people,
+                    title: "Total Donatur",
+                    value: controller.totalDonatur.value.toString(),
+                    color: const Color(0xFF8B5CF6),
                   ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _StatCard(
+                    icon: Icons.receipt_long,
+                    title: "Total Transaksi",
+                    value: controller.totalTransaksi.value.toString(),
+                    color: Colors.orange,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _StatCard(
+                    icon: Icons.trending_up,
+                    title: "Rata-rata",
+                    value: "Rp ${formatCurrency(controller.rataRata.value)}",
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
+            ),
 
-          const SizedBox(height: 80),
-        ],
+            const SizedBox(height: 24),
+
+            // Riwayat Donasi Terbaru
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF2D1B69), Color(0xFF1A1A4E)],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "📋 Riwayat Donasi Terbaru",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (controller.recentDonations.isEmpty)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          "Belum ada donasi",
+                          style: TextStyle(color: Colors.white60),
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1C2147),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundColor: const Color(0xFF8B5CF6),
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  controller.recentDonations.first['donor']
+                                          ?.toString() ??
+                                      '-',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  controller.recentDonations.first['pesan']
+                                          ?.toString() ??
+                                      '-',
+                                  style: const TextStyle(
+                                    color: Colors.white60,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Rp ${formatCurrency(int.tryParse(controller.recentDonations.first['nominal'].toString()) ?? 0)}',
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                controller.recentDonations.first['created_at']
+                                        ?.toString() ??
+                                    '',
+                                style: const TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
     );
   }
@@ -345,111 +360,121 @@ class _DashboardTab extends StatelessWidget {
 class _DonasiMasukTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF2D1B69), Color(0xFF1A1A4E)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.05)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "💰 Donasi Masuk",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Semua dukungan yang diterima dari para penonton dan penggemar",
-                  style: TextStyle(color: Colors.white60, fontSize: 13),
-                ),
-                const SizedBox(height: 16),
+    final controller = Get.find<StreamerDashboardController>();
 
-                // Donasi Item
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1C2147),
-                    borderRadius: BorderRadius.circular(12),
+    return Obx(
+      () => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF2D1B69), Color(0xFF1A1A4E)],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "💰 Donasi Masuk",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 22,
-                        backgroundColor: const Color(0xFF8B5CF6),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 22,
+                  const SizedBox(height: 4),
+                  Text(
+                    "Semua dukungan yang diterima dari para penonton dan penggemar",
+                    style: TextStyle(color: Colors.white60, fontSize: 13),
+                  ),
+                  const SizedBox(height: 16),
+
+                  if (controller.recentDonations.isEmpty)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          "Belum ada donasi",
+                          style: TextStyle(color: Colors.white60),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    )
+                  else
+                    ...controller.recentDonations.map(
+                      (item) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1C2147),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
                           children: [
-                            const Text(
-                              "Del",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                            const CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Color(0xFF8B5CF6),
+                              child: Icon(Icons.person, color: Colors.white),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item['donor']?.toString() ?? '-',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    item['pesan']?.toString() ?? '-',
+                                    style: const TextStyle(
+                                      color: Colors.white60,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 2),
-                            Text(
-                              "Hebat",
-                              style: TextStyle(
-                                color: Colors.white60,
-                                fontSize: 12,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'Rp ${DashboardStreamerScreen().formatCurrency(int.tryParse(item['nominal'].toString()) ?? 0)}',
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  item['created_at']?.toString() ?? '',
+                                  style: const TextStyle(
+                                    color: Colors.white60,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "Rp 100.000",
-                            style: const TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          Text(
-                            "15 Jun 2026 11:51",
-                            style: TextStyle(
-                              color: Colors.white60,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 80),
-        ],
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
     );
   }
@@ -460,86 +485,87 @@ class _DonasiMasukTab extends StatelessWidget {
 class _StatistikTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<StreamerController>();
-    final totalDonasi = controller.streamers.fold<int>(
-      0,
-      (sum, s) => sum + s.totalDonasi,
-    );
+    final controller = Get.find<StreamerDashboardController>();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF2D1B69), Color(0xFF1A1A4E)],
+    return Obx(
+      () => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF2D1B69), Color(0xFF1A1A4E)],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.05)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "📊 Statistik Streamer",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "📊 Statistik Streamer",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Analisis performa donasi dan aktivitas pendukung Anda",
-                  style: TextStyle(color: Colors.white60, fontSize: 13),
-                ),
-                const SizedBox(height: 16),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Analisis performa donasi dan aktivitas pendukung Anda",
+                    style: TextStyle(color: Colors.white60, fontSize: 13),
+                  ),
+                  const SizedBox(height: 16),
 
-                // Grid Stats
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.2,
-                  children: [
-                    _StatistikItem(
-                      title: "Donasi Terbesar",
-                      value: "Rp 100.000",
-                      icon: Icons.emoji_events,
-                      color: Colors.amber,
-                    ),
-                    _StatistikItem(
-                      title: "Rata-rata Donasi",
-                      value: "Rp ${formatCurrency(totalDonasi)}",
-                      icon: Icons.trending_up,
-                      color: Colors.blue,
-                    ),
-                    _StatistikItem(
-                      title: "Top Donatur",
-                      value: "Del",
-                      icon: Icons.person,
-                      color: Colors.pink,
-                    ),
-                    _StatistikItem(
-                      title: "Donasi Masuk",
-                      value: "Rp 100.000",
-                      icon: Icons.monetization_on,
-                      color: Colors.green,
-                    ),
-                  ],
-                ),
-              ],
+                  // Grid Stats
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 1.2,
+                    children: [
+                      _StatistikItem(
+                        title: "Donasi Terbesar",
+                        value:
+                            "Rp ${formatCurrency(controller.donasiTerbesar.value)}",
+                        icon: Icons.emoji_events,
+                        color: Colors.amber,
+                      ),
+                      _StatistikItem(
+                        title: "Rata-rata Donasi",
+                        value:
+                            "Rp ${formatCurrency(controller.rataRata.value)}",
+                        icon: Icons.trending_up,
+                        color: Colors.blue,
+                      ),
+                      _StatistikItem(
+                        title: "Top Donatur",
+                        value: controller.topDonatur.value,
+                        icon: Icons.person,
+                        color: Colors.pink,
+                      ),
+                      _StatistikItem(
+                        title: "Donasi Masuk",
+                        value:
+                            "Rp ${formatCurrency(controller.totalDonasi.value)}",
+                        icon: Icons.monetization_on,
+                        color: Colors.green,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 80),
-        ],
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
     );
   }

@@ -20,7 +20,7 @@ class StreamerScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        toolbarHeight: 0, // Set ke 0 agar AppBar tidak memakan ruang
+        toolbarHeight: 0,
         centerTitle: true,
       ),
       body: Container(
@@ -75,7 +75,7 @@ class StreamerScreen extends StatelessWidget {
               ),
             ),
 
-            // Main content - tanpa SafeArea agar lebih rapat ke atas
+            // Main content
             Obx(() {
               if (controller.isLoading.value && controller.streamers.isEmpty) {
                 return const Center(
@@ -93,7 +93,7 @@ class StreamerScreen extends StatelessWidget {
                 onRefresh: controller.loadStreamers,
                 child: CustomScrollView(
                   slivers: [
-                    // Hanya spacer kecil untuk status bar
+                    // Spacer untuk status bar
                     SliverToBoxAdapter(
                       child: SizedBox(
                         height: MediaQuery.of(context).padding.top + 8,
@@ -270,7 +270,7 @@ class StreamerScreen extends StatelessWidget {
                     // ── Leaderboard Horizontal List ──────────────────────────
                     SliverToBoxAdapter(
                       child: SizedBox(
-                        height: 200,
+                        height: 260, // Diperbesar dari 200
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -607,7 +607,7 @@ class _LeaderboardCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       onTap: () => Get.toNamed(Routes.streamerDetail, arguments: streamer),
       child: Container(
-        width: 130,
+        width: 150, // Diperbesar dari 130
         margin: const EdgeInsets.only(right: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -627,13 +627,14 @@ class _LeaderboardCard extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Rank badge - diperbesar
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: rankColor.withOpacity(0.25),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: rankColor.withOpacity(0.6),
                   width: 1.5,
@@ -644,25 +645,29 @@ class _LeaderboardCard extends StatelessWidget {
                 style: TextStyle(
                   color: rankColor,
                   fontWeight: FontWeight.bold,
-                  fontSize: 11,
+                  fontSize: 13,
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
+
+            // Avatar - diperbesar
             Center(
               child: CircleAvatar(
-                radius: 24,
+                radius: 30, // Diperbesar dari 24
                 backgroundColor: Colors.white.withOpacity(0.2),
                 backgroundImage:
                     streamer.foto != null && streamer.foto!.isNotEmpty
                     ? NetworkImage(streamer.foto!)
                     : null,
                 child: streamer.foto == null || streamer.foto!.isEmpty
-                    ? const Icon(Icons.person, color: Colors.white, size: 24)
+                    ? const Icon(Icons.person, color: Colors.white, size: 30)
                     : null,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
+
+            // Name - diperbesar
             Text(
               streamer.name,
               maxLines: 1,
@@ -671,18 +676,58 @@ class _LeaderboardCard extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontSize: 13,
+                fontSize: 15,
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
+
+            // Game - TAMBAHKAN
+            Text(
+              streamer.game ?? 'Streamer',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 11,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Followers - diperbesar
             Text(
               "${streamer.followers} Followers",
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 10,
-                color: Colors.white.withOpacity(0.7),
+                fontSize: 12, // Diperbesar dari 10
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // ── TOMBOL DONATE ──
+            SizedBox(
+              width: double.infinity,
+              height: 30,
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.toNamed(Routes.streamerDetail, arguments: streamer);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF8B5CF6),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: EdgeInsets.zero,
+                ),
+                child: const Text(
+                  "Donate",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
           ],

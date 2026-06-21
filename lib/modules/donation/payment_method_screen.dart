@@ -68,6 +68,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Widget build(BuildContext context) {
     final data = Get.arguments as Map<String, dynamic>;
 
+    // ── AMBIL STATUS GUEST ──
+    final bool isGuest = data['is_guest'] == true;
+
     // Ambil data dari WalletController
     final walletController = Get.find<WalletController>();
 
@@ -100,38 +103,39 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       ),
       body: Column(
         children: [
-          // Info Saldo Wallet
-          Container(
-            margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF25245E),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.account_balance_wallet,
-                  color: Color(0xFF8B5CF6),
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  "Saldo Wallet",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                const Spacer(),
-                Obx(
-                  () => Text(
-                    "Rp ${rupiah(walletController.balance.value)}",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+          // ── INFO SALDO WALLET ── (Hanya untuk User Login)
+          if (!isGuest)
+            Container(
+              margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF25245E),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.account_balance_wallet,
+                    color: Color(0xFF8B5CF6),
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    "Saldo Wallet",
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  const Spacer(),
+                  Obx(
+                    () => Text(
+                      "Rp ${rupiah(walletController.balance.value)}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
           Expanded(
             child: ListView.builder(
@@ -141,9 +145,15 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 final method = methods[index];
                 final selected = selectedMethod == method.code;
 
-                // Disable wallet
-                final bool walletDisabled =
-                    method.code == "wallet" && !walletEnough;
+                // ── DISABLE WALLET UNTUK GUEST ──
+                final bool walletDisabled = isGuest
+                    ? method.code == "wallet"
+                    : method.code == "wallet" && !walletEnough;
+
+                // ── HIDE WALLET UNTUK GUEST ──
+                if (isGuest && method.code == "wallet") {
+                  return const SizedBox.shrink();
+                }
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),

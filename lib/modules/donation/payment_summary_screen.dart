@@ -476,13 +476,27 @@ class PaymentSummaryScreen extends StatelessWidget {
                         return;
                       }
 
-                      // ── QRIS ──
+                      // ── QRIS ── (UPDATED)
                       if (paymentMethod == 'qris') {
-                        final result = await DonationService().createQris(
-                          streamerId: streamer.id,
-                          nominal: nominal,
-                          pesan: pesan,
-                        );
+                        final bool isGuest = data['is_guest'] == true;
+
+                        Map<String, dynamic> result;
+
+                        if (isGuest) {
+                          result = await DonationService().guestCreateQris(
+                            streamerId: streamer.id,
+                            guestName: data['guest_name'] ?? '',
+                            guestPhone: data['guest_phone'] ?? '',
+                            nominal: nominal,
+                            pesan: pesan,
+                          );
+                        } else {
+                          result = await DonationService().createQris(
+                            streamerId: streamer.id,
+                            nominal: nominal,
+                            pesan: pesan,
+                          );
+                        }
 
                         if (result['success'] != true) {
                           Get.snackbar(
@@ -499,7 +513,10 @@ class PaymentSummaryScreen extends StatelessWidget {
 
                         Get.offNamed(
                           Routes.paymentQris,
-                          arguments: {'donasi_id': qris['id']},
+                          arguments: {
+                            'donasi_id': qris['id'],
+                            'is_guest': isGuest,
+                          },
                         );
                         return;
                       }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../app/routes/app_routes.dart';
 import '../../app/theme/app_colors.dart';
+import '../../controllers/auth_controller.dart';
 import '../../controllers/streamer_controller.dart';
 import '../../models/streamer_model.dart';
 
@@ -39,6 +40,8 @@ class StreamerDetailScreen extends StatelessWidget {
 
     final StreamerModel streamer = args as StreamerModel;
     final controller = Get.find<StreamerController>();
+    final auth = Get.find<AuthController>();
+    final bool isGuest = !auth.isLoggedIn.value;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -199,7 +202,7 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 30),
 
-                          // Stats Row - Followers langsung dari streamer
+                          // Stats Row
                           Row(
                             children: [
                               Expanded(
@@ -316,35 +319,38 @@ class StreamerDetailScreen extends StatelessWidget {
 
                           const SizedBox(height: 30),
 
-                          // Buttons Row - Follow/Unfollow dengan Obx
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: 58,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF8B5CF6),
-                                        Color(0xFF6D5BFF),
-                                      ],
-                                    ),
+                          // ── BUTTONS ROW ──
+                          if (isGuest)
+                            SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Get.toNamed(
+                                    Routes.donate,
+                                    arguments: streamer,
+                                  );
+                                },
+                                icon: const Icon(Icons.favorite),
+                                label: const Text("Donate"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF8B5CF6),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(
-                                          0xFF8B5CF6,
-                                        ).withOpacity(0.3),
-                                        blurRadius: 20,
-                                      ),
-                                    ],
                                   ),
+                                ),
+                              ),
+                            )
+                          else
+                            Row(
+                              children: [
+                                Expanded(
                                   child: Obx(
                                     () => ElevatedButton.icon(
                                       onPressed: () async {
                                         try {
                                           if (controller.isFollowing.value) {
-                                            // UNFOLLOW
                                             await controller.unfollow(
                                               streamer.id,
                                             );
@@ -358,7 +364,6 @@ class StreamerDetailScreen extends StatelessWidget {
                                                   SnackPosition.BOTTOM,
                                             );
                                           } else {
-                                            // FOLLOW
                                             await controller.follow(
                                               streamer.id,
                                             );
@@ -381,7 +386,7 @@ class StreamerDetailScreen extends StatelessWidget {
                                       },
                                       icon: Icon(
                                         controller.isFollowing.value
-                                            ? Icons.person_remove
+                                            ? Icons.check
                                             : Icons.person_add,
                                       ),
                                       label: Text(
@@ -390,55 +395,9 @@ class StreamerDetailScreen extends StatelessWidget {
                                             : "Follow",
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        backgroundColor: Colors.transparent,
-                                        shadowColor: Colors.transparent,
-                                        foregroundColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Container(
-                                  height: 58,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF8B5CF6),
-                                        Color(0xFF6D5BFF),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(
+                                        backgroundColor: const Color(
                                           0xFF8B5CF6,
-                                        ).withOpacity(0.3),
-                                        blurRadius: 20,
-                                      ),
-                                    ],
-                                  ),
-                                  child: SizedBox.expand(
-                                    child: ElevatedButton.icon(
-                                      onPressed: () {
-                                        Get.toNamed(
-                                          Routes.donate,
-                                          arguments: streamer,
-                                        );
-                                      },
-                                      icon: const Icon(Icons.favorite),
-                                      label: const Text("Donate"),
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        backgroundColor: Colors.transparent,
-                                        shadowColor: Colors.transparent,
+                                        ),
                                         foregroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
@@ -449,9 +408,28 @@ class StreamerDetailScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      Get.toNamed(
+                                        Routes.donate,
+                                        arguments: streamer,
+                                      );
+                                    },
+                                    icon: const Icon(Icons.favorite),
+                                    label: const Text("Donate"),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF8B5CF6),
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
 
                           const SizedBox(height: 40),
                         ],
