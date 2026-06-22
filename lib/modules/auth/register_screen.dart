@@ -161,7 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       alignment: Alignment.topCenter,
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(top: 80),
+                          margin: const EdgeInsets.only(top: 60),
                           width: double.infinity,
                           padding: const EdgeInsets.fromLTRB(28, 100, 28, 30),
                           decoration: BoxDecoration(
@@ -346,8 +346,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ],
                           ),
                         ),
+                        // ── LOGO (Lebih Kecil) ──
                         Positioned(
-                          top: -20,
+                          top: -40,
                           child: Container(
                             decoration: BoxDecoration(
                               boxShadow: [
@@ -360,10 +361,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             child: Image.asset(
                               'assets/images/logo.png',
-                              width: 270,
+                              width: 200, // <-- Logo lebih kecil
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) =>
-                                  const SizedBox(width: 270, height: 100),
+                                  const SizedBox(width: 200, height: 80),
                             ),
                           ),
                         ),

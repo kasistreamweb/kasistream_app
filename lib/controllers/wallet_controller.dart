@@ -1,5 +1,8 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+
+// Tambahkan import ini
+import '../controllers/auth_controller.dart';
 import '../app/services/wallet_service.dart';
 
 class WalletController extends GetxController {
@@ -83,7 +86,16 @@ class WalletController extends GetxController {
       pendingWithdraw.value =
           int.tryParse(summary['pending_withdraw'].toString()) ?? 0;
 
-      history.value = await _service.getHistory();
+      // ── PERUBAHAN: Pilih history berdasarkan role user ──
+      final auth = Get.find<AuthController>();
+
+      if (auth.user.value?.isStreamer == true) {
+        // Streamer: ambil history withdraw
+        history.value = await _service.getHistory();
+      } else {
+        // User biasa: ambil history donasi
+        history.value = await _service.getDonationHistory();
+      }
     } catch (e) {
       Get.snackbar(
         'Error',

@@ -4,45 +4,64 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/main_controller.dart';
+import '../../controllers/auth_controller.dart'; // Tambahkan import ini
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
 import '../streamer/streamer_screen.dart';
 import '../wallet/wallet_screen.dart';
 import '../streamer/dashboard_streamer_screen.dart';
+import '../streamer/become_streamer_screen.dart'; // Import screen untuk Become Streamer
 
 class MainScreen extends GetView<MainController> {
   const MainScreen({super.key});
 
-  static const List<_NavItem> _navItems = [
-    _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: "Home"),
-    _NavItem(
-      icon: Icons.live_tv_outlined,
-      activeIcon: Icons.live_tv,
-      label: "Streamer",
-    ),
-    _NavItem(
-      icon: Icons.dashboard_outlined,
-      activeIcon: Icons.dashboard,
-      label: "Dashboard",
-    ),
-    _NavItem(
-      icon: Icons.account_balance_wallet_outlined,
-      activeIcon: Icons.account_balance_wallet,
-      label: "Wallet",
-    ),
-    _NavItem(
-      icon: Icons.person_outline,
-      activeIcon: Icons.person,
-      label: "Profile",
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    // Pindahkan authController ke sini
+    final authController = Get.find<AuthController>();
+
+    // Buat navItems di dalam build() - tidak lagi static const
+    final navItems = [
+      const _NavItem(
+        icon: Icons.home_outlined,
+        activeIcon: Icons.home,
+        label: "Home",
+      ),
+      const _NavItem(
+        icon: Icons.live_tv_outlined,
+        activeIcon: Icons.live_tv,
+        label: "Streamer",
+      ),
+      _NavItem(
+        icon: authController.user.value?.isStreamer == true
+            ? Icons.dashboard_outlined
+            : Icons.rocket_launch_outlined,
+        activeIcon: authController.user.value?.isStreamer == true
+            ? Icons.dashboard
+            : Icons.rocket_launch,
+        label: authController.user.value?.isStreamer == true
+            ? "Dashboard"
+            : "Become",
+      ),
+      const _NavItem(
+        icon: Icons.account_balance_wallet_outlined,
+        activeIcon: Icons.account_balance_wallet,
+        label: "Wallet",
+      ),
+      const _NavItem(
+        icon: Icons.person_outline,
+        activeIcon: Icons.person,
+        label: "Profile",
+      ),
+    ];
+
+    // Buat pages di dalam build() - dinamis berdasarkan authController
     final pages = [
       const HomeScreen(),
       const StreamerScreen(),
-      const DashboardStreamerScreen(),
+      authController.user.value?.isStreamer == true
+          ? const DashboardStreamerScreen()
+          : const BecomeStreamerScreen(), // Ganti dengan screen yang sesuai
       const WalletScreen(),
       ProfileScreen(),
     ];
@@ -58,7 +77,7 @@ class MainScreen extends GetView<MainController> {
           ),
         ),
         bottomNavigationBar: _FloatingNavBar(
-          items: _navItems,
+          items: navItems, // Gunakan navItems yang sudah dibuat
           currentIndex: controller.currentIndex.value,
           onTap: controller.changeTab,
         ),
