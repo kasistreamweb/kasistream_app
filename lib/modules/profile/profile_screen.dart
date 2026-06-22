@@ -213,34 +213,12 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
 
-                  _sectionTitle("Akun"),
-
-                  _menuTile(Icons.person_outline, "Edit Profil", () {
-                    Get.toNamed(Routes.editProfile);
-                  }),
-
-                  _menuTile(Icons.account_balance_wallet, "Wallet", () {
-                    Get.toNamed(Routes.wallet);
-                  }),
-
-                  _menuTile(Icons.favorite_border, "Following", () {}),
-
-                  _menuTile(Icons.history, "Riwayat Donasi", () {}),
-
-                  if (user?.isStreamer == true) ...[
-                    _sectionTitle("Streamer"),
-                    _menuTile(Icons.dashboard, "Dashboard Streamer", () {
-                      Get.toNamed(Routes.dashboard);
-                    }),
-                    _menuTile(Icons.payments, "Withdraw", () {}),
-                    _menuTile(Icons.account_balance, "Rekening", () {}),
-                  ],
-
+                 
                   _sectionTitle("Lainnya"),
                   _menuTile(Icons.settings, "Pengaturan", () {
                     Get.toNamed(Routes.settings);
                   }),
-                  _menuTile(Icons.help_outline, "Bantuan", () {}),
+               
 
                   Padding(
                     padding: const EdgeInsets.all(20),

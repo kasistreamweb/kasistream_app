@@ -5,6 +5,7 @@ import '../../app/theme/app_colors.dart';
 import '../../controllers/wallet_controller.dart';
 import '../../app/routes/app_routes.dart';
 import 'withdraw_screen.dart';
+import 'withdraw_history_screen.dart';
 
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key});
@@ -218,15 +219,8 @@ class WalletScreen extends StatelessWidget {
                                   child: _actionButton(
                                     icon: Icons.history,
                                     label: 'Riwayat',
-                                    onTap: () async {
-                                      await controller.loadWallet();
-                                      Get.snackbar(
-                                        'Berhasil',
-                                        'Riwayat diperbarui',
-                                        snackPosition: SnackPosition.TOP,
-                                        backgroundColor: Colors.green,
-                                        colorText: Colors.white,
-                                      );
+                                    onTap: () {
+                                     Get.to(() => const WithdrawHistoryScreen());
                                     },
                                   ),
                                 ),
@@ -398,177 +392,7 @@ class WalletScreen extends StatelessWidget {
 
                             const SizedBox(height: 20),
 
-                            // ── RIWAYAT TRANSAKSI ──
-                            const Text(
-                              'Riwayat Transaksi',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-
-                            Obx(() {
-                              if (controller.history.isEmpty) {
-                                return Container(
-                                  padding: const EdgeInsets.all(30),
-                                  decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFF1A1F4E,
-                                    ).withOpacity(0.4),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: Colors.white.withOpacity(0.05),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.history,
-                                        size: 40,
-                                        color: Colors.grey[600],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Belum ada transaksi',
-                                        style: TextStyle(
-                                          color: Colors.grey[400],
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-
-                              return Column(
-                                children: controller.history.map((item) {
-                                  final status =
-                                      item['status']
-                                          ?.toString()
-                                          .toLowerCase() ??
-                                      '';
-                                  final isApproved = status == 'approved';
-                                  final isPending = status == 'pending';
-                                  final nominal =
-                                      int.tryParse(
-                                        item['nominal'].toString(),
-                                      ) ??
-                                      0;
-
-                                  Color statusColor;
-                                  if (isApproved) {
-                                    statusColor = Colors.green;
-                                  } else if (isPending) {
-                                    statusColor = Colors.orange;
-                                  } else {
-                                    statusColor = Colors.red;
-                                  }
-
-                                  return Container(
-                                    margin: const EdgeInsets.only(bottom: 10),
-                                    padding: const EdgeInsets.all(14),
-                                    decoration: BoxDecoration(
-                                      color: const Color(
-                                        0xFF1A1F4E,
-                                      ).withOpacity(0.4),
-                                      borderRadius: BorderRadius.circular(14),
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.05),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            color: statusColor.withOpacity(
-                                              0.15,
-                                            ),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            isApproved
-                                                ? Icons.arrow_upward
-                                                : Icons.schedule,
-                                            color: statusColor,
-                                            size: 20,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                item['bank'] ?? 'Transfer',
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 2),
-                                              Text(
-                                                item['created_at']
-                                                        ?.toString()
-                                                        .substring(0, 10) ??
-                                                    '-',
-                                                style: TextStyle(
-                                                  color: Colors.grey[400],
-                                                  fontSize: 11,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              '- Rp ${formatCurrency(nominal)}',
-                                              style: TextStyle(
-                                                color: statusColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 2,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: statusColor.withOpacity(
-                                                  0.15,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: Text(
-                                                status.toUpperCase(),
-                                                style: TextStyle(
-                                                  color: statusColor,
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                              );
-                            }),
-                            const SizedBox(height: 80),
+                        
                           ],
                         ),
                       ),

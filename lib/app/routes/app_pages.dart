@@ -9,6 +9,7 @@ import '../../modules/settings/settings_screen.dart';
 import '../../modules/splash/splash_screen.dart';
 import '../../modules/streamer/streamer_screen.dart';
 import '../../modules/wallet/wallet_screen.dart';
+import '../../modules/wallet/withdraw_history_screen.dart';
 import '../../modules/main/main_screen.dart';
 import '../../modules/donation/donate_screen.dart';
 import '../../modules/streamer/streamer_detail_screen.dart';
@@ -112,6 +113,12 @@ class AppPages {
       name: Routes.history,
       page: () => const DonationHistoryScreen(),
       middlewares: [AuthMiddleware()],
+    ),
+
+    GetPage(
+       name: '/withdraw-history',
+       page: () => const WithdrawHistoryScreen(),
+       middlewares: [AuthMiddleware()],
     ),
 
     GetPage(

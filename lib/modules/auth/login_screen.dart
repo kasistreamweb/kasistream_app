@@ -507,7 +507,7 @@ class _HoverScale extends StatefulWidget {
   final Widget child;
   final double scale;
 
-  const _HoverScale({required this.child, this.scale = 1.03});
+  const _HoverScale({required this.child}) : scale = 1.03;
 
   @override
   State<_HoverScale> createState() => _HoverScaleState();
